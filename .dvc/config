@@ -1,0 +1,5 @@
+[core]
+    remote = aws-remote
+['remote "aws-remote"']
+    url = s3://maia-microproyecto-g23-dvc-20262
+    region = us-east-2
