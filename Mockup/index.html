@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observatorio Canguro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Material Symbols Rounded para iconos limpios y redondeados -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,600,0,0" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">OC</div>
+        </div>
+        <ul class="nav-links">
+            <li class="active" onclick="navigateTo('triage', this)">
+                <span class="icon material-symbols-rounded">bar_chart</span>
+                <span class="text">Resumen</span>
+            </li>
+            <li onclick="navigateTo('ingreso', this)">
+                <span class="icon material-symbols-rounded">person_add</span>
+                <span class="text">Nuevo Ingreso</span>
+            </li>
+            <li id="nav-detalle" onclick="navigateTo('detalle', this)" style="display:none;">
+                <span class="icon material-symbols-rounded">person</span>
+                <span class="text">Paciente</span>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="content-area">
+        
+        <!-- VISTA 1: TRIAGE -->
+        <section id="view-triage" class="view active">
+            <header>
+                <h1>Evaluación de Riesgo Nutricional</h1>
+                <p class="subtitle">Análisis de riesgo de desnutrición crónica por aprendizaje automático a los 24 meses.</p>
+            </header>
+
+            <div class="kpi-container">
+                <div class="card kpi-card">
+                    <span class="material-symbols-rounded kpi-icon">groups</span>
+                    <div class="kpi-info">
+                        <h4>Total Pacientes</h4>
+                        <div class="kpi-value">1,245</div>
+                    </div>
+                </div>
+                <div class="card kpi-card">
+                    <span class="material-symbols-rounded kpi-icon">pregnant_woman</span>
+                    <div class="kpi-info">
+                        <h4>Gestación</h4>
+                        <div class="kpi-value">320</div>
+                    </div>
+                </div>
+                <div class="card kpi-card">
+                    <span class="material-symbols-rounded kpi-icon">child_care</span>
+                    <div class="kpi-info">
+                        <h4>Neonatales</h4>
+                        <div class="kpi-value">925</div>
+                    </div>
+                </div>
+                <div class="card kpi-card warning-kpi">
+                    <span class="material-symbols-rounded kpi-icon">warning</span>
+                    <div class="kpi-info">
+                        <h4>En Riesgo</h4>
+                        <div class="kpi-value risk-val">186</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="top-widgets">
+                <div class="card chart-card">
+                    <h3>Distribución de Riesgo</h3>
+                    <div class="chart-container donut-container">
+                        <canvas id="riskDonutChart"></canvas>
+                    </div>
+                </div>
+                <div class="card chart-card">
+                    <h3>Distribución por Edad y Riesgo</h3>
+                    <div class="chart-container bar-container">
+                        <canvas id="admissionsBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card table-card">
+                <div class="table-header">
+                    <h3>Cohorte Activa</h3>
+                    <div class="actions">
+                        <button class="btn btn-primary" onclick="navigateTo('ingreso', document.querySelectorAll('.nav-links li')[1])">Registrar Paciente</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID Paciente</th>
+                                <th>Edad Corregida</th>
+                                <th>Peso al Nacer</th>
+                                <th>Indicador SGA</th>
+                                <th>Riesgo (24 Meses)</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsTableBody">
+                            <!-- Filas generadas dinámicamente en JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA 2: INGRESO -->
+        <section id="view-ingreso" class="view">
+            <header>
+                <h1>Registro de Nuevo Paciente y Perfil Materno</h1>
+                <p class="subtitle">Ingrese la información para la evaluación inicial</p>
+            </header>
+
+            <div class="form-container">
+                <div class="card form-card">
+                    <div class="card-icon material-symbols-rounded" style="font-size: 32px; color: var(--primary-color);">family_restroom</div>
+                    <h3>Perfil Materno</h3>
+                    <div class="form-group">
+                        <label for="edu">Nivel Educativo</label>
+                        <select id="edu" class="input-rounded">
+                            <option>Ninguno</option>
+                            <option>Primaria</option>
+                            <option>Secundaria</option>
+                            <option>Técnico/Tecnólogo</option>
+                            <option>Universitario</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="riqueza">Quintil de Riqueza</label>
+                        <select id="riqueza" class="input-rounded">
+                            <option>Q1 (Más bajo)</option>
+                            <option>Q2</option>
+                            <option>Q3</option>
+                            <option>Q4</option>
+                            <option>Q5 (Más alto)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="toggles-group">
+                        <label class="toggle-container">
+                            <span class="toggle-label">Anemia</span>
+                            <input type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
+                        <label class="toggle-container">
+                            <span class="toggle-label">Depresión</span>
+                            <input type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="card form-card">
+                    <div class="card-icon material-symbols-rounded" style="font-size: 32px; color: var(--primary-color);">child_care</div>
+                    <h3>Datos del Nacimiento</h3>
+                    <div class="form-group">
+                        <label for="edadGestacional">Edad Gestacional (Semanas)</label>
+                        <input type="number" id="edadGestacional" class="input-rounded" placeholder="Ej. 34">
+                    </div>
+                    <div class="form-group">
+                        <label for="pesoNacer">Peso al Nacer (Gramos)</label>
+                        <input type="number" id="pesoNacer" class="input-rounded" placeholder="Ej. 1850">
+                    </div>
+
+                    <div class="toggles-group mt-large">
+                        <label class="toggle-container highlighted-toggle">
+                            <span class="toggle-label">Pequeño para la Edad Gestacional (SGA)</span>
+                            <input type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-footer">
+                <button class="btn btn-primary btn-large shadow-glow" onclick="alert('Guardado y cálculo de riesgo ejecutado')">
+                    Guardar y Calcular Riesgo
+                </button>
+            </div>
+        </section>
+
+        <!-- VISTA 3: DETALLE (DASHBOARD INDIVIDUAL) -->
+        <section id="view-detalle" class="view">
+            <header class="header-with-back">
+                <button class="btn-icon" onclick="navigateTo('triage', document.querySelectorAll('.nav-links li')[0])">
+                    <span class="material-symbols-rounded">arrow_back</span>
+                </button>
+                <div>
+                    <h1>Análisis de Trayectoria: Paciente #10245</h1>
+                    <p class="subtitle">Evaluación detallada de riesgo y seguimiento</p>
+                </div>
+            </header>
+
+            <div class="dashboard-top">
+                <div class="card dashboard-card">
+                    <h3>Predicción de Riesgo</h3>
+                    <div class="chart-container gauge-container">
+                        <canvas id="gaugeChart"></canvas>
+                    </div>
+                    <div class="risk-label risk-high" id="gaugeRiskLabel">78% - Riesgo Alto</div>
+                </div>
+
+                <div class="card dashboard-card">
+                    <h3>Factores de Riesgo (SHAP)</h3>
+                    <div class="chart-container shap-container">
+                        <canvas id="shapChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card tracking-card">
+                <h3>Proyección de Talla para la Edad (LAZ)</h3>
+                <div class="chart-container line-container">
+                    <canvas id="lazChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
