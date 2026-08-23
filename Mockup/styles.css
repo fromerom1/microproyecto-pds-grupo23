@@ -540,3 +540,9 @@ input:checked + .slider:before {
 .risk-val {
     color: var(--accent-red);
 }
+
+
+/* Los iconos son ligaduras tipograficas: si la fuente no carga se veria el nombre
+   literal del icono. Se ocultan hasta que app.js confirma que la fuente esta lista. */
+.material-symbols-rounded { visibility: hidden; }
+.iconos-listos .material-symbols-rounded { visibility: visible; }
