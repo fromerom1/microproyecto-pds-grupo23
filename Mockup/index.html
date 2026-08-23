@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Google Material Symbols Rounded para iconos limpios y redondeados -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,600,0,0" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="vendor/chart.umd.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -48,28 +48,28 @@
                     <span class="material-symbols-rounded kpi-icon">groups</span>
                     <div class="kpi-info">
                         <h4>Total Pacientes</h4>
-                        <div class="kpi-value">1,245</div>
+                        <div class="kpi-value">333</div>
                     </div>
                 </div>
                 <div class="card kpi-card">
                     <span class="material-symbols-rounded kpi-icon">pregnant_woman</span>
                     <div class="kpi-info">
-                        <h4>Gestación</h4>
-                        <div class="kpi-value">320</div>
+                        <h4>Prematuros</h4>
+                        <div class="kpi-value">31</div>
                     </div>
                 </div>
                 <div class="card kpi-card">
                     <span class="material-symbols-rounded kpi-icon">child_care</span>
                     <div class="kpi-info">
-                        <h4>Neonatales</h4>
-                        <div class="kpi-value">925</div>
+                        <h4>Bajo peso al nacer</h4>
+                        <div class="kpi-value">20</div>
                     </div>
                 </div>
                 <div class="card kpi-card warning-kpi">
                     <span class="material-symbols-rounded kpi-icon">warning</span>
                     <div class="kpi-info">
-                        <h4>En Riesgo</h4>
-                        <div class="kpi-value risk-val">186</div>
+                        <h4>En Riesgo Alto</h4>
+                        <div class="kpi-value risk-val">67</div>
                     </div>
                 </div>
             </div>
@@ -101,7 +101,7 @@
                         <thead>
                             <tr>
                                 <th>ID Paciente</th>
-                                <th>Edad Corregida</th>
+                                <th>Edad de seguimiento</th>
                                 <th>Peso al Nacer</th>
                                 <th>Indicador SGA</th>
                                 <th>Riesgo (24 Meses)</th>
@@ -120,7 +120,7 @@
         <section id="view-ingreso" class="view">
             <header>
                 <h1>Registro de Nuevo Paciente y Perfil Materno</h1>
-                <p class="subtitle">Ingrese la información para la evaluación inicial</p>
+                <p class="subtitle">Ingrese la información para la evaluación inicial. Son las 16 variables basales del contrato de modelado: 10 maternas al enrolamiento y 6 del nacimiento (prematurez y bajo peso se derivan de la edad gestacional y el peso).</p>
             </header>
 
             <div class="form-container">
@@ -148,6 +148,52 @@
                         </select>
                     </div>
                     
+                    <div class="form-group">
+                        <label for="edadMaterna">Edad Materna</label>
+                        <select id="edadMaterna" class="input-rounded">
+                            <option>25 años o menos</option>
+                            <option>26 a 35 años</option>
+                            <option>Más de 35 años</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="marital">Estado Marital</label>
+                        <select id="marital" class="input-rounded">
+                            <option>Casada / Unión libre</option>
+                            <option>Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="hfia">Inseguridad Alimentaria del Hogar</label>
+                        <select id="hfia" class="input-rounded">
+                            <option>Alimentación asegurada</option>
+                            <option>Leve</option>
+                            <option>Moderada</option>
+                            <option>Severa</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="muac">Estado Nutricional Materno (MUAC)</label>
+                        <select id="muac" class="input-rounded">
+                            <option>Desnutrición</option>
+                            <option>Normal</option>
+                            <option>Por encima de lo normal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="paridad">Paridad</label>
+                        <select id="paridad" class="input-rounded">
+                            <option>Nulípara</option>
+                            <option>Multípara</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="vih">Estado VIH</label>
+                        <select id="vih" class="input-rounded">
+                            <option>Negativo</option>
+                            <option>Positivo</option>
+                        </select>
+                    </div>
                     <div class="toggles-group">
                         <label class="toggle-container">
                             <span class="toggle-label">Anemia</span>
@@ -165,6 +211,20 @@
                 <div class="card form-card">
                     <div class="card-icon material-symbols-rounded" style="font-size: 32px; color: var(--primary-color);">child_care</div>
                     <h3>Datos del Nacimiento</h3>
+                    <div class="form-group">
+                        <label for="sexo">Sexo del Recién Nacido</label>
+                        <select id="sexo" class="input-rounded">
+                            <option>Femenino</option>
+                            <option>Masculino</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cesarea">Tipo de Parto</label>
+                        <select id="cesarea" class="input-rounded">
+                            <option>Vaginal</option>
+                            <option>Cesárea</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="edadGestacional">Edad Gestacional (Semanas)</label>
                         <input type="number" id="edadGestacional" class="input-rounded" placeholder="Ej. 34">

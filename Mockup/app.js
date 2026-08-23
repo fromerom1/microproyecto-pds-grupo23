@@ -92,7 +92,7 @@ function initCharts() {
         data: {
             labels: ['Riesgo Alto', 'Riesgo Medio', 'Riesgo Bajo'],
             datasets: [{
-                data: [15, 30, 55],
+                data: [67, 100, 166],   // suma 333, coherente con los indicadores
                 backgroundColor: [COLORS.high, COLORS.medium, COLORS.low],
                 borderWidth: 4,
                 borderColor: COLORS.bg,
@@ -114,21 +114,23 @@ function initCharts() {
     charts.bar = new Chart(ctxBar, {
         type: 'bar',
         data: {
-            labels: ['Gest. <32s', 'Gest. 32-37s', '0-6 Mes', '6-12 Mes', '12-24 Mes'],
+            // Tramos de seguimiento de la cohorte (333 bebes en total).
+            // La cohorte no tiene registros de etapa gestacional: la primera visita es el nacimiento.
+            labels: ['Nacimiento', '0-6 meses', '6-12 meses', '12-18 meses', '18-24 meses'],
             datasets: [
                 {
                     label: 'Riesgo Alto',
-                    data: [45, 30, 20, 15, 5],
+                    data: [6, 9, 13, 20, 22],
                     backgroundColor: COLORS.high
                 },
                 {
                     label: 'Riesgo Medio',
-                    data: [25, 40, 35, 30, 20],
+                    data: [12, 17, 21, 24, 26],
                     backgroundColor: COLORS.medium
                 },
                 {
                     label: 'Riesgo Bajo',
-                    data: [10, 25, 50, 75, 120],
+                    data: [49, 45, 39, 30, 27],
                     backgroundColor: COLORS.low
                 }
             ]
@@ -187,11 +189,12 @@ function initCharts() {
     charts.shap = new Chart(ctxShap, {
         type: 'bar',
         data: {
-            labels: ['SGA', 'Bajo Peso', 'Riqueza Q1', 'Edad Gest.'],
+            labels: ['SGA', 'Bajo Peso', 'Riqueza Q1', 'Edad Gest.', 'Sexo femenino', 'Sin depresión'],
             datasets: [{
-                label: 'Impacto (+%)',
-                data: [25, 15, 8, 5],
-                backgroundColor: COLORS.high,
+                label: 'Contribución al riesgo (puntos porcentuales)',
+                // Positivo = aumenta el riesgo · Negativo = lo reduce
+                data: [25, 15, 8, 5, -6, -9],
+                backgroundColor: (ctx) => ctx.raw >= 0 ? COLORS.high : COLORS.low,
                 borderRadius: 8
             }]
         },
@@ -200,7 +203,8 @@ function initCharts() {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                x: { beginAtZero: true, max: 30, border: {display: false} },
+                x: { min: -15, max: 30, border: {display: false},
+                     title: { display: true, text: 'Reduce el riesgo  <-  0  ->  Aumenta el riesgo' } },
                 y: { grid: {display: false}, border: {display: false} }
             },
             plugins: { legend: { display: false } }
@@ -271,7 +275,7 @@ function initCharts() {
             maintainAspectRatio: false,
             scales: {
                 x: { 
-                    title: { display: true, text: 'Meses de Edad Corregida' },
+                    title: { display: true, text: 'Meses de seguimiento' },
                     grid: { display: false }
                 },
                 y: { 
@@ -285,6 +289,35 @@ function initCharts() {
             }
         }
     });
+}
+
+// Los iconos son ligaduras tipograficas: si la fuente no carga, el navegador imprime
+// el nombre literal ("bar_chart", "person_add") en grande. Para evitarlo se ocultan por
+// CSS y solo se revelan si la fuente esta realmente disponible.
+//
+// document.fonts.check() no sirve aqui: devuelve true aunque la familia no exista,
+// porque cuenta la fuente de reemplazo. Se mide el ancho: con la fuente cargada la
+// ligadura ocupa un glifo (~1em); sin ella ocupa las 9 letras de "bar_chart".
+function iconosDisponibles() {
+    const probe = document.createElement('span');
+    probe.className = 'material-symbols-rounded';
+    probe.textContent = 'bar_chart';
+    probe.style.cssText = 'position:absolute;visibility:hidden;font-size:24px;white-space:nowrap';
+    document.body.appendChild(probe);
+    const ancho = probe.offsetWidth;
+    probe.remove();
+    return ancho > 0 && ancho < 60;   // un glifo mide ~24px; el texto crudo pasa de 100px
+}
+
+function resolverIconos() {
+    if (iconosDisponibles()) document.documentElement.classList.add('iconos-listos');
+}
+
+if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(resolverIconos).catch(resolverIconos);
+    setTimeout(resolverIconos, 3000); // red lenta: un reintento
+} else {
+    resolverIconos();
 }
 
 // Iniciar
