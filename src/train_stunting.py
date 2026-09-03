@@ -12,9 +12,13 @@ Contrato de modelado (EDA Paso 9):
   * Imputacion/balanceo SOLO dentro del fold de entrenamiento
   * Metricas: F1, PR-AUC, ROC-AUC, sensibilidad
 
-Uso local: python train_stunting.py
-Uso VM:    python3 train_stunting.py --n-estimators 500 --max-depth 0 --max-features 8
-           (max-depth 0 = None/arboles sin limite)
+Experimentos MLflow multi-familia:
+  * --model rf : Random Forest   (n_estimators, max_depth, max_features)
+  * --model lr : Regr. Logistica (C, penalty)   <- regularizacion como "hiperparametro"
+  * --model gb : Gradient Boosting (n_estimators, max_depth)
+
+Uso local: python train_stunting.py --model lr --C 0.1
+Uso VM:    python3 train_stunting.py --model rf --n-estimators 500 --max-depth 0 --max-features 8
 """
 
 import argparse
@@ -30,7 +34,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.model_selection import GroupShuffleSplit
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (f1_score, average_precision_score, roc_auc_score,
                              recall_score, accuracy_score, ConfusionMatrixDisplay)
 
@@ -51,7 +56,7 @@ TARGET   = 'stunted_24'
 
 
 # ---------------------------------------------------------------------------
-# 2. PIPELINE DE PREPROCESAMIENTO (cleansing + normalizacion + transformacion)
+# 2. PIPELINE DE PREPROCESAMIENTO (se ajusta SOLO con el fold de train)
 # ---------------------------------------------------------------------------
 class Winsorizer(BaseEstimator, TransformerMixin):
     """Recorta edades gestacionales biologicamente implausibles (>44 sem, EDA Paso 6)."""
@@ -64,12 +69,6 @@ class Winsorizer(BaseEstimator, TransformerMixin):
 
 
 def build_preprocessor():
-    """
-    Decisiones del EDA implementadas (se ajustan SOLO con el fold de train):
-      * gestage_final: winsorizacion + imputacion mediana + estandarizacion
-      * categoricas con faltantes: categoria 'missing' = indicador de faltante
-      * categoricas completas: one-hot con handle_unknown (categorias raras)
-    """
     pipe_num = Pipeline([
         ("winsor", Winsorizer(25.0, 44.0)),
         ("imputa", SimpleImputer(strategy="median")),
@@ -103,14 +102,57 @@ def grouped_split(df, seed=SEED):
 
 
 # ---------------------------------------------------------------------------
-# 4. ENTRENAMIENTO + METRICAS + MLFLOW
+# 4. CONSTRUCCION DEL CLASIFICADOR SEGUN CLI
+# ---------------------------------------------------------------------------
+def build_classifier(args):
+    """Familia de modelo elegible por CLI para los experimentos MLflow."""
+    if args.model == "lr":
+        # solver liblinear soporta l1 y l2; C pequeno = mas regularizacion
+        return LogisticRegression(C=args.C, penalty=args.penalty, solver="liblinear",
+                                  max_iter=1000, class_weight="balanced",
+                                  random_state=SEED)
+    if args.model == "gb":
+        return GradientBoostingClassifier(n_estimators=args.n_estimators,
+                                          max_depth=3 if args.max_depth == 0 else args.max_depth,
+                                          learning_rate=0.05, random_state=SEED)
+    return RandomForestClassifier(n_estimators=args.n_estimators,
+                                  max_depth=None if args.max_depth == 0 else args.max_depth,
+                                  max_features=args.max_features,
+                                  class_weight="balanced", random_state=SEED)
+
+
+def importancias(clf, pre):
+    """Importancia agregada por variable original:
+    arboles -> feature_importances_; lineales -> |coef_|; si no, None."""
+    nombres = pre.get_feature_names_out()
+    if hasattr(clf, "feature_importances_"):
+        imp = clf.feature_importances_
+    elif hasattr(clf, "coef_"):
+        imp = np.abs(clf.coef_[0])
+    else:
+        return None
+    def orig_var(n):
+        pref, rest = n.split("__")
+        return rest if pref == "num" else rest.rsplit("_", 1)[0]
+    return (pd.Series(imp, index=[orig_var(n) for n in nombres])
+            .groupby(level=0).sum().sort_values(ascending=False))
+
+
+# ---------------------------------------------------------------------------
+# 5. ENTRENAMIENTO + METRICAS + MLFLOW
 # ---------------------------------------------------------------------------
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default="model_dataset.csv")
+    ap.add_argument("--model", default="rf", choices=["rf", "lr", "gb"],
+                    help="Familia del modelo: rf (default), lr o gb")
+    # Hiperparametros RF / GB
     ap.add_argument("--n-estimators", type=int, default=200)
-    ap.add_argument("--max-depth", type=int, default=6)     # 0 = sin limite
+    ap.add_argument("--max-depth", type=int, default=6)      # 0 = sin limite (rf)
     ap.add_argument("--max-features", type=int, default=4)
+    # Hiperparametros LR (regularizacion)
+    ap.add_argument("--C", type=float, default=1.0)          # menor C = mas regularizacion
+    ap.add_argument("--penalty", default="l2", choices=["l1", "l2"])
     args = ap.parse_args()
 
     # --- carga y target binario (positivo = 'yes') ---
@@ -124,14 +166,8 @@ def main():
     # --- pipeline completo: el preprocesamiento vive DENTRO del artefacto ---
     modelo = Pipeline([
         ("prep", build_preprocessor()),
-        ("clf",  RandomForestClassifier(
-                    n_estimators=args.n_estimators,
-                    max_depth=None if args.max_depth == 0 else args.max_depth,
-                    max_features=args.max_features,
-                    class_weight="balanced",
-                    random_state=SEED)),
+        ("clf",  build_classifier(args)),
     ])
-
     modelo.fit(train[FEATURES], train.y)     # fitting SOLO con train
 
     def evalua(X, ytrue, tag):
@@ -146,35 +182,36 @@ def main():
         return m
 
     print("\n[VALIDACION]");  m_val  = evalua(val[FEATURES],  val.y,  "val")
-    print("[TEST]");         m_test = evalua(test[FEATURES], test.y, "test")
+    print("[TEST]");          m_test = evalua(test[FEATURES], test.y, "test")
 
     # --- figuras para el analisis visual del reporte (artefactos MLflow) ---
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
     ConfusionMatrixDisplay.from_predictions(test.y, modelo.predict(test[FEATURES]),
                                             ax=axes[0], cmap="Blues")
-    axes[0].set_title("Matriz de confusion (test)")
-
-    nombres = modelo.named_steps["prep"].get_feature_names_out()
-    imp = modelo.named_steps["clf"].feature_importances_
-    def orig_var(n):
-        pref, rest = n.split("__")
-        return rest if pref == "num" else rest.rsplit("_", 1)[0]
-    serie = (pd.Series(imp, index=[orig_var(n) for n in nombres])
-             .groupby(level=0).sum().sort_values(ascending=False).head(10))
-    axes[1].barh(serie.index[::-1], serie.values[::-1], color="#e67e22")
-    axes[1].set_title("Top 10 variables (importancia)")
+    axes[0].set_title(f"Matriz de confusion (test) - {args.model}")
+    serie = importancias(modelo.named_steps["clf"], modelo.named_steps["prep"])
+    if serie is not None:
+        top = serie.head(10)
+        axes[1].barh(top.index[::-1], top.values[::-1], color="#e67e22")
+        axes[1].set_title("Top 10 variables (importancia)")
+    else:
+        axes[1].axis("off")
     plt.tight_layout()
     fig.savefig("run_summary.png", dpi=120, bbox_inches="tight")
 
     # --- MLflow (misma logica del Taller 4) ---
-    # En la VM: correr el servidor en la MISMA carpeta del script:
+    # En la VM: servidor en la MISMA carpeta del script:
     #   mlflow server -h 0.0.0.0 -p 8050 --allowed-hosts "localhost:8050,<IP>:8050"
-    # mlflow.set_tracking_uri("http://<IP_PUBLICA>:8050")
-    mlflow.set_experiment("stunting-baseline-rf")
-    with mlflow.start_run(run_name=f"rf_{args.n_estimators}_d{args.max_depth}_f{args.max_features}"):
+    mlflow.set_experiment("stunting-baseline-multi")
+    run_name = (f"lr_C{args.C}_{args.penalty}" if args.model == "lr"
+                else f"{args.model}_{args.n_estimators}_d{args.max_depth}_f{args.max_features}")
+    with mlflow.start_run(run_name=run_name):
+        mlflow.log_param("model", args.model)
         mlflow.log_param("n_estimators", args.n_estimators)
         mlflow.log_param("max_depth", args.max_depth if args.max_depth else None)
         mlflow.log_param("max_features", args.max_features)
+        mlflow.log_param("C", args.C)
+        mlflow.log_param("penalty", args.penalty)
         mlflow.log_param("class_weight", "balanced")
         mlflow.log_param("bloque_features", "16 basales (tiempo cero)")
         mlflow.log_param("target", TARGET)
@@ -184,9 +221,9 @@ def main():
             mlflow.log_metric(k, v)
         mlflow.log_artifact("run_summary.png")
         try:
-            mlflow.sklearn.log_model(modelo, name="stunting-rf")
+            mlflow.sklearn.log_model(modelo, name="stunting-model")
         except TypeError:                      # MLflow 2.22 (VM del taller) usa artifact_path
-            mlflow.sklearn.log_model(modelo, artifact_path="stunting-rf")
+            mlflow.sklearn.log_model(modelo, artifact_path="stunting-model")
         print("\nRun registrada en MLflow.")
 
 
