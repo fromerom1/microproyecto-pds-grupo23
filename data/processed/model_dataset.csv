@@ -1,0 +1,334 @@
+newid,enrol_hiv_status_cat,momage_cat,educ_cat_n,marital_cat,hfia_enr,wealth_quintile,depression,mom_muac_cat,parity,enrol_anemia,b1_sex,gestage_final,caesarean,preterm,sga,lbw,stunted_12,stunted_24
+96,Negative,26 to 35,Primary or below,Married,severe,quintile2,mild,normal,multi,no,female,38.0,no,no,no,no,no,no
+97,Positive,35 and more,Secondary and above,Married,secured,highest quintile,no depression,above normal,multi,no,male,39.62,yes,no,no,no,no,no
+98,Negative,26 to 35,Secondary and above,Married,severe,lowest quintile,no depression,normal,nulli,no,male,38.9,yes,no,no,no,no,no
+99,Negative,26 to 35,Secondary and above,Married,mild,quintile2,no depression,normal,multi,no,male,43.48,no,no,no,no,no,no
+100,Negative,25 and less,Secondary and above,Married,secured,highest quintile,no depression,above normal,nulli,no,male,39.19,yes,no,no,no,no,no
+101,Negative,26 to 35,Secondary and above,Married,secured,lowest quintile,mild,normal,multi,no,male,41.33,no,no,no,no,no,yes
+102,Negative,26 to 35,Primary or below,Married,severe,quintile4,no depression,above normal,multi,no,female,38.0,no,no,no,no,no,no
+103,Positive,25 and less,Secondary and above,Married,secured,quintile4,no depression,normal,multi,no,male,38.9,no,no,no,no,yes,yes
+104,Positive,35 and more,Primary or below,Married,severe,quintile4,no depression,above normal,multi,no,male,41.76,no,no,no,no,no,yes
+105,Positive,25 and less,Primary or below,Married,secured,quintile3,no depression,normal,multi,no,male,47.33,yes,no,no,no,no,no
+106,Negative,25 and less,Secondary and above,Married,secured,highest quintile,mild,normal,nulli,yes,male,40.33,no,no,no,no,no,no
+107,Positive,35 and more,Primary or below,Married,secured,quintile2,mild,normal,multi,no,female,39.9,no,no,no,no,no,no
+108,Negative,26 to 35,Primary or below,Married,severe,quintile3,no depression,normal,multi,yes,female,43.05,no,no,no,no,no,yes
+109,Negative,25 and less,Secondary and above,Married,secured,quintile3,mild,normal,nulli,yes,female,40.48,no,no,no,no,no,no
+110,Positive,26 to 35,Primary or below,Married,severe,quintile4,mild,normal,multi,no,male,42.76,,no,,no,yes,yes
+111,Positive,25 and less,Primary or below,Married,,lowest quintile,mild,above normal,multi,no,male,38.0,no,no,no,no,yes,yes
+112,Positive,35 and more,Primary or below,Married,secured,quintile2,no depression,undernutrition,multi,no,male,33.33,no,yes,yes,yes,yes,yes
+113,Positive,26 to 35,Secondary and above,Married,secured,quintile3,no depression,normal,multi,no,female,40.33,no,no,no,no,no,no
+114,Negative,25 and less,Secondary and above,Other,severe,lowest quintile,mild,normal,nulli,no,male,35.0,no,yes,no,no,no,yes
+115,Positive,26 to 35,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,yes,female,35.19,no,yes,no,no,no,no
+116,Negative,26 to 35,Secondary and above,Married,secured,quintile4,no depression,normal,multi,no,male,38.04,yes,no,yes,no,no,no
+117,Positive,25 and less,Secondary and above,Married,severe,quintile2,no depression,normal,multi,yes,female,37.9,yes,no,no,no,no,no
+118,Negative,26 to 35,Primary or below,Married,severe,quintile2,no depression,undernutrition,multi,no,male,41.18,no,no,no,no,no,no
+119,Negative,26 to 35,Secondary and above,Married,moderate,quintile2,no depression,normal,multi,yes,male,39.48,no,no,no,no,no,no
+120,Positive,26 to 35,Primary or below,Married,mild,lowest quintile,no depression,normal,multi,yes,female,36.76,,yes,,no,no,yes
+121,Positive,35 and more,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,no,female,38.18,yes,no,no,no,no,no
+122,Negative,25 and less,Secondary and above,Married,secured,highest quintile,no depression,normal,nulli,no,female,38.0,no,no,no,no,no,no
+123,Negative,25 and less,Secondary and above,Married,secured,highest quintile,no depression,undernutrition,multi,no,male,34.61,no,yes,no,yes,yes,no
+124,Negative,25 and less,Secondary and above,Married,secured,quintile4,no depression,normal,nulli,yes,female,37.9,no,no,no,no,no,no
+125,Positive,35 and more,Primary or below,Married,moderate,quintile2,mild,normal,multi,yes,male,34.9,no,yes,yes,no,no,no
+126,Positive,26 to 35,Secondary and above,Married,moderate,highest quintile,no depression,above normal,multi,no,male,39.48,no,no,no,no,no,no
+127,Negative,35 and more,Primary or below,Married,severe,quintile2,no depression,normal,multi,no,male,40.19,no,no,no,yes,yes,yes
+128,Positive,25 and less,Primary or below,Married,secured,lowest quintile,no depression,normal,nulli,yes,male,42.04,yes,no,,no,,
+129,Positive,26 to 35,Secondary and above,Other,mild,quintile2,no depression,normal,multi,yes,female,39.76,no,no,no,no,no,no
+130,Negative,25 and less,Secondary and above,Married,secured,highest quintile,no depression,normal,nulli,no,male,43.61,yes,no,no,no,no,no
+131,Negative,26 to 35,Primary or below,Married,severe,quintile2,mild,normal,multi,yes,female,39.0,no,no,yes,no,yes,yes
+132,Positive,26 to 35,Primary or below,Married,mild,lowest quintile,mild,undernutrition,multi,yes,female,39.04,no,no,no,no,no,yes
+133,Negative,25 and less,Primary or below,Married,severe,highest quintile,mild,normal,multi,no,female,39.0,no,no,no,no,no,no
+134,Positive,26 to 35,Secondary and above,Married,severe,highest quintile,no depression,normal,multi,yes,female,39.47,no,no,yes,no,no,yes
+135,Positive,35 and more,Primary or below,Married,severe,lowest quintile,no depression,normal,multi,,male,40.0,no,no,no,no,no,no
+136,Positive,26 to 35,Primary or below,Married,severe,quintile2,mild,above normal,multi,no,male,39.0,no,no,no,no,no,no
+137,Positive,26 to 35,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,no,female,39.33,no,no,no,no,no,yes
+138,Positive,26 to 35,Primary or below,Married,moderate,quintile2,no depression,normal,multi,no,male,38.0,no,no,no,no,yes,yes
+139,Negative,26 to 35,Secondary and above,Married,moderate,quintile4,mild,normal,multi,no,male,39.0,no,no,no,no,yes,yes
+140,Positive,26 to 35,Primary or below,Married,mild,quintile3,no depression,above normal,multi,no,male,39.0,yes,no,no,no,yes,yes
+141,Negative,25 and less,Primary or below,Married,mild,quintile3,no depression,normal,multi,no,female,32.76,no,yes,no,no,yes,yes
+142,Positive,26 to 35,Primary or below,Married,severe,quintile3,no depression,undernutrition,multi,no,female,38.0,no,no,no,no,no,yes
+143,Negative,35 and more,Secondary and above,Married,severe,quintile3,no depression,normal,multi,no,female,38.0,yes,no,no,no,no,no
+144,Negative,26 to 35,Secondary and above,Married,moderate,highest quintile,mild,normal,multi,no,female,39.0,no,no,no,no,no,no
+145,Negative,25 and less,Primary or below,Other,mild,quintile3,no depression,normal,nulli,no,male,39.61,no,no,no,no,no,no
+146,Negative,25 and less,Primary or below,Married,secured,lowest quintile,no depression,undernutrition,multi,yes,male,37.18,no,no,no,no,no,yes
+147,Negative,25 and less,Primary or below,Married,severe,quintile4,no depression,normal,multi,no,male,37.9,no,no,no,no,yes,yes
+148,Negative,25 and less,Secondary and above,Other,secured,quintile4,mild,normal,multi,yes,male,38.0,no,no,no,no,no,yes
+149,Positive,26 to 35,Primary or below,Other,moderate,quintile3,no depression,normal,multi,yes,male,39.0,no,no,,no,,
+150,Negative,26 to 35,Primary or below,Married,moderate,quintile2,no depression,normal,multi,no,female,40.0,no,no,no,no,no,no
+151,Negative,25 and less,Primary or below,Other,moderate,lowest quintile,mild,normal,nulli,no,male,38.0,no,no,no,yes,no,yes
+152,Negative,26 to 35,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,yes,female,39.0,no,no,no,no,no,no
+153,Positive,26 to 35,Primary or below,Married,secured,highest quintile,no depression,above normal,multi,yes,female,37.04,no,no,no,no,no,no
+154,Positive,26 to 35,Primary or below,Married,severe,quintile4,no depression,normal,multi,no,male,40.0,no,no,no,no,yes,yes
+155,Negative,25 and less,Primary or below,Married,secured,lowest quintile,no depression,normal,multi,yes,female,38.0,no,no,no,no,no,no
+156,Positive,25 and less,Primary or below,Married,severe,quintile2,mild,normal,multi,yes,female,40.0,no,no,no,no,no,no
+157,Negative,35 and more,Secondary and above,Married,mild,highest quintile,mild,above normal,multi,no,female,41.0,yes,no,no,no,,
+158,Negative,26 to 35,Primary or below,Married,secured,quintile3,mild,normal,multi,yes,male,31.61,,yes,,no,no,no
+159,Negative,25 and less,Primary or below,Married,mild,quintile2,no depression,normal,multi,no,female,39.47,no,no,no,no,no,no
+160,Negative,25 and less,Secondary and above,Married,mild,quintile4,no depression,normal,multi,no,female,38.0,no,no,yes,yes,no,yes
+161,Negative,25 and less,Secondary and above,Married,secured,highest quintile,no depression,normal,multi,no,male,41.0,no,no,no,no,yes,no
+162,Negative,25 and less,Secondary and above,Other,secured,highest quintile,no depression,normal,nulli,no,male,39.0,no,no,no,no,no,no
+163,Negative,26 to 35,Secondary and above,Married,secured,highest quintile,no depression,normal,multi,no,male,40.0,no,no,no,no,no,no
+164,Negative,25 and less,Secondary and above,Married,moderate,quintile3,mild,normal,nulli,no,male,41.0,yes,no,,no,no,no
+165,Positive,25 and less,Primary or below,Married,severe,quintile4,mild,normal,multi,yes,male,39.0,yes,no,no,no,yes,no
+166,Positive,35 and more,Primary or below,Married,severe,quintile2,mild,normal,multi,yes,female,42.0,no,no,no,no,no,yes
+167,Positive,26 to 35,Primary or below,Married,severe,highest quintile,mild,normal,multi,no,male,38.0,no,no,no,no,no,yes
+168,Positive,26 to 35,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,no,female,37.0,no,no,no,no,no,no
+169,Negative,26 to 35,Primary or below,Married,severe,quintile3,mild,normal,multi,no,female,39.0,no,no,no,no,no,yes
+170,Positive,26 to 35,Primary or below,Married,moderate,quintile2,mild,normal,multi,no,female,38.0,no,no,no,no,no,no
+171,Negative,26 to 35,Primary or below,Married,severe,highest quintile,no depression,above normal,multi,no,female,38.33,no,no,no,,yes,no
+172,Negative,26 to 35,Secondary and above,Married,severe,quintile4,mild,normal,multi,no,female,40.0,no,no,no,no,no,no
+173,Positive,25 and less,Primary or below,Other,severe,quintile2,no depression,normal,multi,no,male,38.0,no,no,no,no,no,no
+174,Positive,25 and less,Primary or below,Other,secured,highest quintile,mild,normal,nulli,,male,40.18,yes,no,,,yes,no
+175,Negative,25 and less,Primary or below,Married,severe,quintile4,mild,normal,multi,yes,male,40.0,no,no,no,no,no,no
+176,Negative,26 to 35,Secondary and above,Married,secured,highest quintile,no depression,normal,nulli,yes,female,39.0,no,no,no,no,yes,yes
+177,Positive,35 and more,Primary or below,Married,moderate,lowest quintile,mild,normal,,no,female,38.0,no,no,no,no,no,no
+178,Negative,35 and more,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,no,female,41.0,no,no,no,no,no,no
+179,Negative,25 and less,Primary or below,Married,mild,lowest quintile,mild,normal,multi,no,male,38.0,no,no,,no,no,no
+180,Negative,25 and less,Secondary and above,Other,moderate,quintile4,mild,normal,nulli,no,male,39.0,no,no,no,yes,no,
+181,Positive,25 and less,Secondary and above,Married,secured,quintile4,mild,normal,multi,no,male,40.0,no,no,no,no,,
+182,Negative,25 and less,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,no,male,41.0,no,no,no,no,no,no
+183,Positive,26 to 35,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,yes,male,36.0,yes,yes,yes,no,yes,no
+184,Positive,25 and less,Secondary and above,Married,moderate,quintile3,moderate or severe,above normal,multi,,male,41.0,no,no,no,no,no,no
+185,Negative,26 to 35,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,no,female,39.47,no,no,no,no,no,yes
+186,Positive,25 and less,Primary or below,Married,secured,highest quintile,no depression,normal,multi,no,female,39.0,no,no,no,no,no,no
+187,Negative,25 and less,Secondary and above,Married,secured,quintile4,no depression,normal,nulli,yes,female,41.0,no,no,no,no,no,no
+188,Positive,35 and more,Primary or below,Other,moderate,lowest quintile,mild,normal,multi,yes,female,39.0,no,no,yes,no,no,yes
+189,Negative,26 to 35,Secondary and above,Married,moderate,quintile4,no depression,normal,multi,no,female,40.0,no,no,no,no,yes,yes
+190,Positive,26 to 35,Primary or below,Married,severe,quintile3,no depression,normal,multi,no,male,36.61,no,yes,no,no,no,no
+191,Positive,25 and less,Secondary and above,Other,moderate,quintile4,mild,normal,multi,yes,female,37.0,no,no,no,no,no,no
+192,Negative,25 and less,Primary or below,Other,severe,quintile3,mild,normal,nulli,no,female,40.0,no,no,no,no,no,no
+193,Negative,26 to 35,Primary or below,Married,moderate,quintile3,no depression,above normal,multi,no,male,39.0,no,no,no,no,no,no
+194,Negative,26 to 35,Secondary and above,Married,secured,quintile4,no depression,normal,multi,no,female,42.47,no,no,no,no,no,no
+195,Positive,35 and more,Primary or below,Married,moderate,quintile3,no depression,normal,multi,no,female,38.0,no,no,,yes,no,no
+196,Positive,26 to 35,Secondary and above,Married,mild,highest quintile,no depression,above normal,multi,no,female,39.0,no,no,no,no,no,yes
+197,Negative,25 and less,Primary or below,Married,moderate,quintile4,no depression,normal,multi,no,female,38.0,no,no,no,no,yes,yes
+198,Negative,26 to 35,Secondary and above,Married,moderate,highest quintile,no depression,above normal,multi,no,female,39.0,no,no,no,no,no,no
+199,Negative,25 and less,Primary or below,Other,moderate,quintile4,mild,normal,multi,yes,female,38.0,no,no,no,no,no,yes
+200,Negative,25 and less,Secondary and above,Married,moderate,quintile2,mild,normal,multi,no,male,39.0,no,no,no,no,no,yes
+201,Positive,26 to 35,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,no,female,39.0,no,no,no,no,no,no
+202,Positive,26 to 35,Secondary and above,Other,moderate,lowest quintile,no depression,normal,multi,yes,male,38.0,no,no,no,no,no,no
+203,Negative,26 to 35,Primary or below,Married,moderate,quintile4,no depression,normal,multi,no,female,39.0,no,no,no,no,no,no
+204,Positive,26 to 35,Secondary and above,Other,moderate,quintile2,mild,normal,multi,no,female,40.0,no,no,yes,yes,no,yes
+205,Negative,26 to 35,Primary or below,Married,mild,quintile3,no depression,normal,multi,no,female,37.0,no,no,no,no,no,no
+206,Negative,25 and less,Secondary and above,Married,secured,quintile4,no depression,normal,multi,no,female,39.0,yes,no,no,no,no,yes
+207,Positive,26 to 35,Primary or below,Married,secured,quintile3,no depression,above normal,multi,no,female,36.0,no,yes,no,yes,yes,yes
+208,Positive,26 to 35,Primary or below,Married,moderate,quintile4,mild,above normal,multi,yes,female,40.0,no,no,no,no,no,yes
+209,Negative,25 and less,Primary or below,Married,mild,quintile4,no depression,normal,multi,no,male,39.0,yes,no,no,no,no,no
+210,Negative,35 and more,Primary or below,Married,severe,lowest quintile,mild,normal,multi,no,female,34.76,no,yes,no,no,no,no
+211,Negative,26 to 35,Primary or below,Married,severe,quintile4,mild,above normal,multi,no,male,39.0,no,no,no,no,no,no
+212,Negative,25 and less,Secondary and above,Other,secured,quintile4,no depression,above normal,nulli,no,male,40.0,yes,no,no,no,no,no
+213,Positive,35 and more,Primary or below,Married,secured,quintile3,no depression,normal,multi,no,male,37.0,no,no,yes,no,no,no
+214,Negative,25 and less,Primary or below,Married,severe,quintile3,no depression,normal,multi,no,male,37.0,no,no,no,no,no,no
+215,Positive,26 to 35,Primary or below,Married,severe,quintile4,mild,normal,multi,yes,female,38.0,no,no,no,no,no,no
+216,Positive,25 and less,Primary or below,Married,severe,highest quintile,moderate or severe,normal,nulli,no,male,37.47,no,no,no,no,no,no
+217,Positive,25 and less,Primary or below,Married,mild,lowest quintile,no depression,normal,multi,no,male,40.18,no,no,no,no,no,no
+218,Negative,35 and more,Primary or below,Married,severe,quintile4,no depression,above normal,multi,no,male,40.0,no,no,no,no,no,yes
+219,Positive,26 to 35,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,no,female,39.0,no,no,no,no,no,no
+220,Positive,35 and more,Primary or below,Married,severe,quintile4,no depression,normal,multi,yes,female,40.0,no,no,no,no,no,yes
+221,Negative,35 and more,Primary or below,Married,severe,quintile2,no depression,above normal,multi,yes,female,39.0,no,no,no,no,yes,no
+222,Positive,25 and less,Primary or below,Other,moderate,lowest quintile,no depression,normal,nulli,yes,male,39.47,yes,no,no,no,no,no
+223,Positive,26 to 35,Primary or below,Married,moderate,quintile2,no depression,normal,multi,no,male,40.0,no,no,no,no,yes,yes
+224,Negative,25 and less,Primary or below,Other,mild,highest quintile,no depression,above normal,multi,yes,male,40.0,no,no,no,no,no,no
+225,Negative,25 and less,Primary or below,Other,moderate,quintile3,no depression,normal,nulli,no,female,41.0,no,no,no,no,no,yes
+226,Negative,25 and less,Secondary and above,Married,moderate,quintile3,no depression,normal,nulli,no,female,39.0,no,no,no,no,no,no
+227,Positive,26 to 35,Primary or below,Married,severe,quintile4,no depression,normal,multi,yes,male,40.0,no,no,no,no,no,
+228,Positive,26 to 35,Primary or below,Married,severe,lowest quintile,no depression,normal,multi,no,female,40.0,no,no,no,no,no,yes
+229,Positive,25 and less,Primary or below,Married,severe,highest quintile,mild,normal,multi,no,male,40.0,yes,no,no,no,no,yes
+230,Negative,25 and less,Primary or below,Other,secured,lowest quintile,moderate or severe,normal,nulli,yes,male,36.0,no,yes,no,no,no,no
+231,Negative,25 and less,Secondary and above,Married,secured,highest quintile,no depression,normal,nulli,no,female,39.0,no,no,no,no,no,no
+232,Negative,26 to 35,Secondary and above,Married,secured,quintile3,no depression,normal,multi,no,female,40.0,no,no,no,no,no,yes
+233,Positive,26 to 35,Primary or below,Married,moderate,quintile4,mild,normal,multi,no,female,40.0,no,no,no,no,no,no
+234,Negative,25 and less,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,no,male,40.0,no,no,,no,yes,yes
+235,Negative,26 to 35,Primary or below,Married,mild,lowest quintile,no depression,normal,multi,no,female,39.0,no,no,no,no,no,no
+236,Negative,26 to 35,Primary or below,Married,moderate,quintile4,no depression,normal,multi,no,male,40.0,no,no,no,no,yes,yes
+237,Positive,26 to 35,Secondary and above,Married,moderate,highest quintile,mild,normal,multi,yes,female,38.0,no,no,no,no,no,no
+238,Positive,26 to 35,Secondary and above,Married,mild,quintile3,no depression,above normal,multi,no,male,39.0,no,no,no,no,no,no
+239,Positive,25 and less,Secondary and above,Other,secured,quintile3,mild,above normal,nulli,no,female,39.0,yes,no,no,no,no,no
+240,Negative,26 to 35,Primary or below,Other,severe,lowest quintile,moderate or severe,normal,multi,no,female,39.9,no,no,no,no,no,no
+241,Positive,25 and less,Secondary and above,Other,secured,quintile3,no depression,normal,nulli,no,male,40.0,yes,no,no,no,no,no
+242,Positive,25 and less,Primary or below,Married,severe,quintile2,no depression,normal,multi,no,male,39.0,no,no,no,no,no,no
+243,Positive,26 to 35,Primary or below,Married,moderate,highest quintile,no depression,normal,multi,yes,male,40.0,no,no,no,no,yes,yes
+244,Negative,35 and more,Secondary and above,Married,moderate,highest quintile,no depression,above normal,multi,no,female,40.0,no,no,no,yes,no,no
+245,Positive,35 and more,Primary or below,Married,moderate,quintile3,moderate or severe,normal,multi,yes,male,38.0,yes,no,no,no,no,no
+246,Positive,35 and more,Primary or below,Married,moderate,lowest quintile,mild,normal,multi,yes,male,40.0,no,no,no,no,no,no
+247,Positive,35 and more,Primary or below,Married,moderate,lowest quintile,mild,normal,multi,no,male,40.0,no,no,,no,no,no
+248,Positive,35 and more,Primary or below,Married,moderate,quintile3,mild,normal,multi,no,female,40.0,no,no,yes,no,no,no
+249,Positive,26 to 35,Primary or below,Married,mild,highest quintile,no depression,normal,multi,no,female,40.0,no,no,no,no,no,yes
+250,Negative,25 and less,Secondary and above,Other,moderate,quintile3,no depression,normal,nulli,no,male,40.0,yes,no,no,no,no,no
+251,Positive,26 to 35,Primary or below,Other,secured,quintile4,no depression,normal,multi,yes,female,40.0,no,no,yes,no,no,yes
+252,Negative,25 and less,Primary or below,Married,moderate,quintile2,no depression,normal,multi,no,male,40.0,no,no,no,no,no,no
+253,Positive,26 to 35,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,,female,39.0,no,no,no,no,no,no
+254,Positive,26 to 35,Primary or below,Married,secured,quintile2,no depression,normal,multi,,female,39.0,no,no,no,no,no,yes
+255,Positive,26 to 35,Primary or below,Married,mild,quintile3,no depression,normal,multi,no,female,40.0,no,no,no,no,no,no
+256,Positive,26 to 35,Secondary and above,Married,moderate,highest quintile,no depression,normal,multi,yes,female,40.0,no,no,no,no,no,no
+257,Positive,26 to 35,Primary or below,Married,moderate,lowest quintile,moderate or severe,normal,multi,yes,male,40.0,no,no,,no,no,no
+258,Positive,26 to 35,Secondary and above,Married,moderate,quintile4,no depression,above normal,multi,no,female,41.0,no,no,no,no,no,no
+259,Negative,35 and more,Primary or below,Married,secured,highest quintile,mild,normal,multi,no,female,38.0,no,no,no,no,no,no
+260,Positive,26 to 35,Primary or below,Other,moderate,lowest quintile,mild,normal,multi,no,male,36.0,no,yes,yes,no,no,no
+261,Positive,25 and less,Primary or below,Married,secured,quintile2,mild,normal,multi,yes,male,39.0,yes,no,no,no,no,no
+262,Positive,35 and more,Secondary and above,Married,moderate,highest quintile,no depression,above normal,multi,no,male,37.0,no,no,no,no,no,no
+263,Positive,26 to 35,Primary or below,Married,moderate,quintile3,no depression,normal,multi,no,female,41.0,no,no,no,no,no,no
+264,Positive,26 to 35,Primary or below,Married,mild,highest quintile,no depression,above normal,multi,no,male,38.0,no,no,no,no,no,no
+265,Positive,26 to 35,Secondary and above,Married,secured,quintile3,no depression,normal,multi,,female,40.0,no,no,no,yes,no,no
+266,Positive,26 to 35,Secondary and above,Married,mild,quintile4,no depression,normal,multi,,male,40.0,no,no,no,no,no,yes
+267,Positive,26 to 35,Primary or below,Married,secured,quintile4,no depression,normal,multi,no,male,38.0,no,no,no,no,yes,yes
+268,Positive,25 and less,Primary or below,Married,moderate,quintile2,no depression,normal,multi,no,male,40.0,yes,no,no,no,no,no
+269,Positive,26 to 35,Primary or below,Married,moderate,quintile3,no depression,normal,multi,no,male,38.0,no,no,no,no,no,no
+270,Positive,35 and more,Primary or below,Married,,quintile3,no depression,normal,multi,yes,female,40.0,no,no,no,no,yes,yes
+271,Positive,25 and less,Primary or below,Married,secured,quintile2,no depression,normal,multi,yes,female,41.0,no,no,,no,no,no
+272,Positive,35 and more,Primary or below,Married,severe,quintile2,no depression,above normal,multi,no,male,40.0,no,no,no,no,yes,yes
+273,Positive,26 to 35,Primary or below,Married,severe,quintile2,no depression,normal,multi,yes,male,37.0,no,no,yes,no,no,no
+274,Positive,26 to 35,Primary or below,Married,moderate,quintile2,no depression,normal,multi,yes,male,33.0,no,yes,yes,yes,yes,yes
+275,Positive,25 and less,Primary or below,Married,secured,lowest quintile,no depression,normal,multi,no,male,39.0,no,no,no,no,yes,yes
+276,Positive,25 and less,Primary or below,Married,moderate,quintile2,no depression,normal,multi,no,male,40.0,no,no,no,no,yes,no
+277,Positive,25 and less,Primary or below,Married,moderate,quintile2,no depression,normal,nulli,yes,female,39.0,no,no,no,no,yes,yes
+278,Positive,26 to 35,Secondary and above,Married,moderate,lowest quintile,no depression,normal,multi,no,female,39.0,no,no,no,no,no,no
+279,Positive,26 to 35,Secondary and above,Married,secured,highest quintile,no depression,normal,multi,no,female,39.0,no,no,yes,yes,no,no
+280,Positive,26 to 35,Primary or below,Married,secured,quintile2,no depression,undernutrition,multi,no,female,40.0,no,no,no,no,yes,yes
+281,Negative,25 and less,Primary or below,Married,secured,quintile4,no depression,normal,nulli,no,male,38.0,no,no,yes,yes,yes,yes
+282,Negative,26 to 35,Primary or below,Married,moderate,quintile4,no depression,above normal,multi,yes,female,39.61,no,no,no,no,no,no
+283,Negative,35 and more,Secondary and above,Married,secured,quintile4,no depression,above normal,multi,no,female,40.04,no,no,no,no,no,no
+284,Negative,25 and less,Primary or below,Married,secured,quintile4,no depression,normal,multi,no,female,40.61,no,no,no,no,no,no
+285,Negative,26 to 35,Primary or below,Married,severe,lowest quintile,no depression,normal,multi,yes,female,42.33,no,no,no,no,no,no
+286,Negative,25 and less,Primary or below,Married,severe,quintile4,no depression,above normal,multi,,female,36.76,no,yes,no,no,no,no
+287,Negative,25 and less,Primary or below,Married,secured,highest quintile,no depression,normal,multi,no,female,39.0,no,no,no,no,no,no
+288,Negative,26 to 35,Secondary and above,Married,moderate,highest quintile,no depression,above normal,multi,no,male,39.9,no,no,no,no,no,no
+289,Negative,26 to 35,Primary or below,Married,mild,quintile3,no depression,normal,multi,,female,36.62,,yes,,no,no,yes
+290,Negative,25 and less,Primary or below,Married,severe,quintile3,no depression,normal,multi,no,male,40.61,no,no,no,no,yes,yes
+291,Negative,25 and less,Secondary and above,Married,secured,quintile4,no depression,normal,nulli,no,female,46.76,no,no,no,no,no,no
+292,Negative,35 and more,Secondary and above,Married,moderate,quintile4,mild,normal,multi,no,male,41.33,yes,no,no,no,no,no
+293,Negative,25 and less,Secondary and above,Married,secured,quintile4,no depression,normal,nulli,yes,female,40.33,no,no,no,no,no,no
+294,Positive,26 to 35,Secondary and above,Other,mild,lowest quintile,mild,normal,multi,no,male,38.9,no,no,no,no,no,no
+295,Negative,25 and less,Secondary and above,Married,severe,quintile3,no depression,normal,nulli,no,female,39.33,no,no,no,yes,no,no
+296,Negative,26 to 35,Primary or below,Married,severe,quintile2,mild,normal,multi,yes,female,39.61,,no,,no,no,no
+297,Negative,25 and less,Primary or below,Married,secured,quintile3,no depression,normal,nulli,no,male,41.04,no,no,no,no,yes,yes
+298,Positive,35 and more,Primary or below,Married,severe,quintile4,no depression,normal,multi,no,male,39.04,no,no,no,no,no,yes
+299,Negative,25 and less,Primary or below,Married,moderate,quintile4,no depression,normal,nulli,yes,female,39.9,no,no,yes,no,no,yes
+300,Negative,25 and less,Secondary and above,Married,severe,quintile3,no depression,normal,nulli,,male,41.9,yes,no,,no,no,no
+301,Negative,25 and less,Secondary and above,Married,secured,quintile4,no depression,normal,nulli,yes,male,37.18,no,no,yes,no,no,no
+302,Positive,25 and less,Primary or below,Other,severe,lowest quintile,mild,normal,multi,no,male,37.9,no,no,no,no,no,no
+303,Negative,26 to 35,Secondary and above,Married,secured,lowest quintile,no depression,normal,nulli,yes,male,41.0,yes,no,no,no,no,no
+304,Positive,26 to 35,Secondary and above,Other,severe,quintile2,mild,normal,multi,yes,male,44.9,no,no,no,no,no,yes
+305,Positive,26 to 35,Secondary and above,Married,mild,quintile4,no depression,normal,nulli,no,male,38.04,no,no,no,no,no,no
+306,Positive,35 and more,Secondary and above,Married,moderate,quintile3,no depression,normal,multi,yes,male,40.33,no,no,no,no,no,no
+307,Positive,26 to 35,Primary or below,Married,severe,highest quintile,no depression,above normal,multi,no,female,41.0,no,no,no,no,no,no
+308,Positive,26 to 35,Primary or below,Married,secured,highest quintile,mild,above normal,multi,no,female,39.76,no,no,no,no,no,no
+309,Positive,26 to 35,Primary or below,Other,severe,quintile4,mild,normal,multi,no,female,37.0,no,no,no,no,no,no
+310,Negative,26 to 35,Primary or below,Married,mild,quintile2,no depression,normal,multi,no,male,37.0,no,no,no,no,no,no
+311,Positive,26 to 35,Primary or below,Other,mild,lowest quintile,no depression,normal,multi,yes,female,35.0,no,yes,yes,no,no,yes
+312,Positive,35 and more,Primary or below,Other,severe,lowest quintile,mild,normal,multi,yes,male,40.0,no,no,yes,no,no,yes
+313,Positive,25 and less,Primary or below,Married,moderate,quintile3,no depression,above normal,multi,no,female,35.18,no,yes,yes,yes,no,no
+314,Positive,35 and more,Secondary and above,Married,severe,quintile3,mild,normal,multi,no,male,39.0,no,no,no,no,no,no
+315,Negative,26 to 35,Secondary and above,Married,severe,quintile4,no depression,normal,multi,yes,male,42.0,no,no,no,no,no,no
+316,Negative,26 to 35,Primary or below,Married,mild,quintile3,no depression,above normal,multi,no,male,39.18,no,no,no,no,no,no
+317,Positive,26 to 35,Primary or below,Married,moderate,quintile2,mild,normal,multi,yes,female,38.0,no,no,no,no,no,no
+318,Positive,35 and more,Primary or below,Married,severe,quintile3,no depression,normal,multi,yes,female,42.0,no,no,no,no,no,no
+319,Positive,26 to 35,Primary or below,Married,secured,quintile4,no depression,above normal,multi,yes,female,38.76,no,no,no,no,no,no
+320,Positive,26 to 35,Secondary and above,Married,severe,quintile3,no depression,normal,multi,yes,female,39.0,no,no,no,no,no,no
+321,Negative,26 to 35,Secondary and above,Married,severe,quintile4,no depression,normal,multi,no,male,36.04,no,yes,no,no,no,no
+322,Negative,25 and less,Secondary and above,Married,secured,quintile3,no depression,normal,nulli,no,male,38.33,yes,no,no,no,yes,yes
+323,Negative,25 and less,Secondary and above,Married,mild,highest quintile,no depression,normal,nulli,no,female,40.0,no,no,no,no,no,no
+324,Negative,25 and less,Secondary and above,Married,severe,quintile3,no depression,normal,nulli,no,female,38.0,no,no,no,no,no,no
+325,Negative,25 and less,Primary or below,Married,secured,lowest quintile,no depression,normal,multi,no,male,40.33,yes,no,no,no,no,yes
+326,Positive,35 and more,Primary or below,Married,mild,quintile3,no depression,above normal,multi,yes,female,38.61,no,no,no,no,no,no
+327,Positive,35 and more,Primary or below,Married,severe,quintile3,no depression,above normal,multi,yes,female,39.0,no,no,no,no,no,no
+328,Negative,25 and less,Primary or below,Married,secured,lowest quintile,mild,normal,multi,no,female,41.0,no,no,no,no,no,no
+329,Positive,25 and less,Primary or below,Married,,highest quintile,no depression,above normal,multi,no,female,39.9,,no,,no,no,no
+330,Negative,25 and less,Secondary and above,Married,severe,lowest quintile,moderate or severe,above normal,nulli,no,male,41.18,no,no,,no,no,yes
+331,Negative,26 to 35,Secondary and above,Married,secured,quintile3,no depression,normal,multi,no,male,39.0,no,no,no,no,no,
+332,Negative,25 and less,Secondary and above,Married,secured,highest quintile,mild,normal,multi,yes,male,40.0,no,no,no,no,no,no
+333,Negative,25 and less,Secondary and above,Married,moderate,highest quintile,no depression,normal,multi,no,female,40.33,yes,no,no,no,no,no
+334,Negative,26 to 35,Primary or below,Married,secured,highest quintile,no depression,above normal,multi,no,female,39.47,no,no,no,no,no,no
+335,Negative,26 to 35,Primary or below,Married,moderate,lowest quintile,mild,normal,multi,no,female,40.04,no,no,,no,no,no
+336,Negative,26 to 35,Primary or below,Married,mild,quintile2,no depression,normal,multi,no,female,39.0,yes,no,no,no,yes,yes
+337,Negative,25 and less,Primary or below,Other,secured,quintile3,no depression,normal,nulli,no,male,39.0,no,no,no,no,no,no
+338,Positive,26 to 35,Secondary and above,Other,moderate,quintile3,mild,normal,multi,yes,female,33.0,no,yes,no,no,no,no
+339,Negative,26 to 35,Secondary and above,Married,secured,highest quintile,no depression,normal,nulli,no,female,38.9,yes,no,,no,no,no
+340,Negative,25 and less,Secondary and above,Married,mild,quintile2,no depression,above normal,multi,no,male,41.0,no,no,,no,no,no
+341,Positive,35 and more,Primary or below,Married,moderate,quintile3,no depression,normal,multi,yes,male,42.0,no,no,no,no,no,yes
+342,Negative,25 and less,Secondary and above,Married,moderate,quintile2,mild,normal,nulli,yes,male,41.9,no,no,no,no,no,no
+343,Negative,26 to 35,Secondary and above,Married,mild,highest quintile,no depression,normal,multi,no,male,37.04,yes,no,no,no,no,no
+344,Negative,25 and less,Secondary and above,Other,secured,quintile2,no depression,normal,nulli,yes,male,43.0,yes,no,no,no,no,no
+345,Positive,26 to 35,Primary or below,Married,secured,lowest quintile,no depression,normal,multi,no,male,37.0,no,no,no,no,no,yes
+346,Negative,25 and less,Secondary and above,Married,secured,quintile2,no depression,normal,nulli,no,male,40.0,no,no,yes,no,no,yes
+347,Positive,26 to 35,Primary or below,Married,severe,highest quintile,no depression,normal,multi,no,male,38.0,no,no,no,no,no,no
+348,Negative,25 and less,Primary or below,Married,severe,highest quintile,no depression,normal,multi,no,female,40.0,no,no,no,no,no,no
+349,Negative,25 and less,Secondary and above,Other,secured,quintile2,no depression,normal,nulli,no,male,34.61,no,yes,no,no,yes,yes
+350,Positive,26 to 35,Primary or below,Married,severe,quintile2,mild,undernutrition,multi,no,male,38.9,no,no,no,no,no,yes
+351,Negative,26 to 35,Secondary and above,Married,severe,quintile3,no depression,normal,multi,yes,male,40.0,no,no,no,no,no,no
+352,Negative,25 and less,Secondary and above,Other,severe,highest quintile,mild,normal,nulli,no,male,39.0,no,no,no,no,no,no
+353,Negative,25 and less,Secondary and above,Married,severe,quintile4,no depression,normal,nulli,no,female,39.0,no,no,no,yes,no,no
+354,Negative,26 to 35,Primary or below,Married,severe,quintile3,moderate or severe,normal,multi,yes,male,40.0,no,no,no,no,no,yes
+355,Positive,35 and more,Primary or below,Married,moderate,lowest quintile,mild,normal,multi,,female,34.47,no,yes,no,no,no,no
+356,Positive,26 to 35,Primary or below,Other,severe,quintile4,no depression,normal,multi,yes,male,39.0,no,no,no,no,no,no
+357,Negative,26 to 35,Primary or below,Married,secured,quintile2,no depression,normal,multi,no,male,41.0,no,no,no,no,no,no
+358,Positive,35 and more,Primary or below,Married,mild,lowest quintile,no depression,normal,multi,yes,male,40.61,no,no,no,no,no,no
+359,Negative,35 and more,Secondary and above,Married,secured,highest quintile,no depression,normal,multi,no,female,40.0,yes,no,no,no,no,no
+360,Negative,35 and more,Secondary and above,Married,severe,quintile4,moderate or severe,normal,multi,yes,male,40.0,no,no,no,no,no,no
+361,Negative,26 to 35,Primary or below,Married,secured,quintile3,no depression,above normal,multi,no,female,42.0,no,no,no,no,no,no
+362,Positive,26 to 35,Primary or below,Married,secured,lowest quintile,mild,normal,multi,no,male,42.76,no,no,no,no,no,no
+363,Positive,26 to 35,Primary or below,Married,secured,quintile4,no depression,above normal,multi,no,female,37.04,no,no,no,no,no,yes
+364,Positive,35 and more,Primary or below,Married,severe,quintile2,mild,normal,multi,yes,male,38.0,no,no,no,no,no,no
+365,Negative,26 to 35,Primary or below,Married,mild,highest quintile,no depression,above normal,multi,no,male,38.76,no,no,no,no,no,no
+366,Negative,26 to 35,Secondary and above,Married,severe,quintile4,no depression,normal,multi,no,male,40.0,yes,no,no,no,yes,yes
+367,Positive,26 to 35,Primary or below,Married,moderate,quintile2,moderate or severe,above normal,multi,yes,female,40.0,no,no,no,no,no,yes
+368,Negative,25 and less,Secondary and above,Married,moderate,highest quintile,no depression,above normal,multi,no,male,38.0,no,no,no,no,no,no
+369,Negative,26 to 35,Primary or below,Married,moderate,quintile2,mild,normal,multi,no,female,36.0,no,yes,,no,no,no
+370,Positive,26 to 35,Secondary and above,Married,secured,highest quintile,no depression,normal,multi,yes,female,40.0,no,no,yes,yes,no,no
+371,Positive,26 to 35,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,yes,male,42.0,no,no,,no,yes,no
+372,Negative,25 and less,Secondary and above,Married,secured,quintile2,no depression,normal,nulli,yes,male,39.0,no,no,no,no,no,yes
+373,Positive,26 to 35,Primary or below,Other,moderate,quintile2,no depression,normal,multi,no,female,40.0,no,no,no,no,no,no
+374,Positive,25 and less,Primary or below,Other,secured,quintile4,mild,normal,nulli,,male,37.0,no,no,no,no,no,no
+375,Positive,26 to 35,Primary or below,Married,moderate,lowest quintile,no depression,above normal,multi,yes,male,40.0,yes,no,no,no,no,no
+376,Negative,25 and less,Secondary and above,Married,secured,highest quintile,no depression,normal,nulli,no,male,40.18,no,no,no,no,yes,yes
+377,Negative,26 to 35,Primary or below,Married,moderate,quintile3,no depression,above normal,multi,no,female,39.0,yes,no,no,no,,
+378,Negative,26 to 35,Secondary and above,Married,moderate,quintile4,no depression,normal,multi,no,female,40.0,no,no,no,no,no,no
+379,Negative,25 and less,Primary or below,Other,moderate,quintile4,no depression,normal,nulli,no,male,42.0,yes,no,no,no,no,yes
+380,Positive,26 to 35,Primary or below,Other,moderate,quintile2,moderate or severe,normal,multi,yes,female,36.0,no,yes,no,no,no,no
+381,Positive,35 and more,Primary or below,Married,moderate,lowest quintile,mild,normal,multi,,female,37.0,no,no,,no,no,no
+382,Negative,25 and less,Secondary and above,Married,secured,quintile2,no depression,above normal,nulli,no,female,40.0,no,no,no,no,no,no
+383,Negative,35 and more,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,no,male,39.76,no,no,no,no,no,no
+384,Positive,26 to 35,Primary or below,Married,severe,lowest quintile,mild,normal,multi,yes,female,39.9,yes,no,,no,no,no
+385,Negative,26 to 35,Primary or below,Other,severe,lowest quintile,no depression,normal,multi,,male,37.0,no,no,no,no,no,no
+386,Positive,25 and less,Secondary and above,Married,moderate,quintile2,no depression,undernutrition,multi,no,male,40.0,no,no,no,no,no,no
+387,Negative,25 and less,Secondary and above,Other,secured,highest quintile,mild,normal,nulli,no,male,39.0,no,no,no,no,no,no
+388,Negative,25 and less,Secondary and above,Married,secured,highest quintile,mild,normal,nulli,no,female,42.0,yes,no,no,no,no,no
+389,Positive,25 and less,Primary or below,Other,severe,quintile2,mild,normal,nulli,no,female,38.61,no,no,no,no,yes,yes
+390,Negative,35 and more,Primary or below,Married,secured,highest quintile,no depression,above normal,nulli,no,female,38.0,no,no,no,no,no,no
+391,Negative,25 and less,Secondary and above,Married,moderate,highest quintile,mild,above normal,nulli,no,male,37.0,yes,no,no,no,no,no
+392,Positive,35 and more,Primary or below,Married,secured,quintile3,no depression,above normal,multi,yes,male,37.0,no,no,no,no,no,no
+393,Negative,25 and less,Primary or below,Married,moderate,quintile2,no depression,above normal,nulli,no,male,38.0,no,no,no,no,no,no
+394,Negative,26 to 35,Secondary and above,Married,secured,highest quintile,no depression,normal,multi,no,male,36.0,yes,yes,no,no,no,no
+395,Negative,25 and less,Secondary and above,Married,moderate,highest quintile,no depression,normal,multi,no,male,38.0,no,no,no,no,no,no
+396,Negative,25 and less,Secondary and above,Married,moderate,lowest quintile,no depression,normal,multi,no,male,38.05,no,no,yes,no,no,no
+397,Negative,25 and less,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,no,male,36.0,yes,yes,no,no,no,no
+398,Positive,26 to 35,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,no,male,39.33,no,no,no,no,no,yes
+399,Negative,25 and less,Primary or below,Married,secured,quintile3,no depression,normal,nulli,no,male,39.0,no,no,no,no,no,no
+400,Negative,26 to 35,Primary or below,Married,mild,highest quintile,no depression,above normal,multi,no,female,36.0,no,yes,,no,no,no
+401,Positive,26 to 35,Primary or below,Married,severe,quintile3,mild,normal,multi,yes,female,38.0,no,no,no,no,no,no
+402,Positive,26 to 35,Primary or below,Married,severe,quintile2,no depression,above normal,,,male,39.0,no,no,no,no,no,yes
+403,Negative,25 and less,Secondary and above,Other,secured,quintile2,no depression,normal,nulli,no,male,39.0,no,no,yes,yes,yes,yes
+404,Negative,25 and less,Primary or below,Other,secured,lowest quintile,no depression,normal,multi,no,male,36.0,no,yes,no,no,yes,yes
+405,Positive,26 to 35,Primary or below,Married,moderate,quintile2,no depression,above normal,multi,,female,39.0,no,no,no,no,no,no
+406,Negative,26 to 35,Primary or below,Married,mild,highest quintile,no depression,above normal,multi,no,female,40.0,no,no,no,no,no,no
+407,Positive,26 to 35,Primary or below,Married,severe,lowest quintile,no depression,normal,multi,yes,male,37.0,no,no,no,no,no,no
+408,Positive,26 to 35,Primary or below,Married,moderate,quintile2,no depression,normal,multi,,male,38.0,no,no,no,no,no,no
+409,Positive,25 and less,Primary or below,Married,moderate,quintile3,no depression,normal,multi,yes,female,39.0,no,no,no,no,no,no
+410,Positive,26 to 35,Primary or below,Other,moderate,lowest quintile,mild,normal,multi,no,male,41.0,no,no,no,no,no,no
+411,Positive,26 to 35,Primary or below,Married,moderate,highest quintile,no depression,normal,multi,yes,female,39.0,no,no,yes,yes,,
+412,Positive,35 and more,Primary or below,Married,secured,quintile2,no depression,above normal,multi,,male,35.05,no,yes,,no,no,no
+413,Positive,25 and less,Primary or below,Married,moderate,highest quintile,no depression,normal,multi,yes,female,40.0,no,no,no,no,no,no
+414,Positive,25 and less,Secondary and above,Married,secured,quintile2,no depression,normal,nulli,yes,male,40.0,no,no,yes,no,yes,yes
+415,Positive,26 to 35,Secondary and above,Married,secured,quintile4,no depression,normal,multi,yes,male,41.0,yes,no,no,no,no,no
+416,Positive,25 and less,Primary or below,Married,moderate,quintile2,no depression,normal,multi,,male,38.0,no,no,no,no,no,no
+417,Positive,35 and more,Primary or below,Married,secured,quintile2,no depression,normal,multi,no,female,40.0,no,no,no,no,no,no
+418,Positive,26 to 35,Secondary and above,Married,mild,quintile3,no depression,normal,multi,yes,male,38.0,no,no,no,no,no,no
+419,Positive,26 to 35,Primary or below,Other,moderate,quintile4,mild,normal,multi,,female,39.0,no,no,no,no,no,no
+420,Positive,26 to 35,Primary or below,Married,severe,quintile4,mild,normal,multi,no,male,37.0,no,no,no,no,yes,yes
+421,Positive,26 to 35,Primary or below,Other,moderate,quintile3,no depression,normal,multi,no,male,48.48,no,no,no,no,no,no
+422,Positive,26 to 35,Secondary and above,Married,secured,quintile4,mild,normal,multi,yes,female,37.0,no,no,no,no,no,no
+423,Positive,25 and less,Primary or below,Married,severe,quintile3,no depression,above normal,multi,,female,41.0,no,no,no,no,no,no
+424,Positive,26 to 35,Secondary and above,Married,moderate,quintile4,no depression,normal,multi,no,male,37.0,no,no,no,no,no,no
+425,Positive,26 to 35,Primary or below,Married,mild,highest quintile,no depression,normal,multi,,male,41.0,no,no,no,no,,
+426,Positive,25 and less,Primary or below,Married,secured,quintile2,no depression,normal,nulli,yes,male,38.0,yes,no,yes,no,no,yes
+427,Positive,26 to 35,Primary or below,Married,moderate,lowest quintile,no depression,normal,multi,yes,female,36.0,no,yes,no,no,no,yes
+428,Positive,35 and more,Primary or below,Married,secured,quintile4,mild,normal,multi,no,male,39.0,no,no,no,no,no,no

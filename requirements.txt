@@ -1,13 +1,26 @@
-pandas
-numpy
-matplotlib
-seaborn
-scikit-learn
-jupyter
-dvc
-mlflow
-fastapi
-uvicorn
-streamlit
-shap
-ipykernel
+# =====================================================
+# Microproyecto PDS - Grupo 23
+# Dependencias: EDA + modelado + tracking + interpretabilidad
+# (Python 3.11-3.12, Ubuntu 24.04)
+# =====================================================
+
+# --- Núcleo científico / EDA ---
+numpy>=1.26
+pandas>=2.2
+matplotlib>=3.8
+seaborn>=0.13
+
+# --- Modelado ---
+scikit-learn>=1.4
+
+# --- Interpretabilidad (SHAP para el tablero, Entregas 2-3) ---
+shap>=0.45
+
+# --- Tracking de experimentos ---
+# Versión validada en la VM del Taller 4 (MLflow 3.x es inestable
+# para experimentos clásicos de scikit-learn con SQLite)
+mlflow==2.22.5
+
+# --- Entorno de desarrollo (notebooks) ---
+jupyter>=1.0
+ipykernel>=6.29
