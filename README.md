@@ -4,7 +4,8 @@ Micro-proyecto — Proyecto Desarrollo de Soluciones, MAIA Uniandes 2026-2, Grup
 En colaboración con la **Fundación Canguro**.
 
 **Maqueta (Entrega 1):** https://fromerom1.github.io/microproyecto-pds-grupo23/Mockup/
-**Tablero (Entrega 2):** `python -m streamlit run app/dashboard.py` desde la raíz del repositorio —
+
+**Tablero (Entrega 2):** `python -m streamlit run app/dashboard.py` desde la raíz del repositorio, 
 es una aplicación Streamlit sobre el modelo real y no puede servirse desde GitHub Pages.
 
 ---
@@ -222,7 +223,3 @@ acuerdo de confidencialidad— esto debe revisarse antes de recibirlos.
 ## Equipo
 
 Grupo 23 · Maestría en Inteligencia Artificial, Universidad de los Andes.
-
-Cada integrante documenta su aporte a través de los commits del repositorio. Para que
-GitHub los atribuya correctamente, el correo de `git config user.email` debe estar
-registrado en la cuenta de GitHub de cada quien.
