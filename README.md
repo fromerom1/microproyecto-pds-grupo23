@@ -3,7 +3,9 @@
 Micro-proyecto — Proyecto Desarrollo de Soluciones, MAIA Uniandes 2026-2, Grupo 23.
 En colaboración con la **Fundación Canguro**.
 
-**Maqueta publicada:** https://fromerom1.github.io/microproyecto-pds-grupo23/Mockup/
+**Maqueta (Entrega 1):** https://fromerom1.github.io/microproyecto-pds-grupo23/Mockup/
+**Tablero (Entrega 2):** `python -m streamlit run app/dashboard.py` desde la raíz del repositorio —
+es una aplicación Streamlit sobre el modelo real y no puede servirse desde GitHub Pages.
 
 ---
 
@@ -125,7 +127,7 @@ python -m src.train_stunting --model lr --C 0.1
 python -m src.predict --demo
 
 # Tablero
-streamlit run app/dashboard.py
+python -m streamlit run app/dashboard.py
 ```
 
 `evaluate_cv` deja en `models/model_stunting_<horizonte>_cv.joblib` el modelo de 16
