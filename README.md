@@ -85,9 +85,9 @@ src/experimento_escalera.py cuánto mejora la predicción con cada visita de seg
 src/predict.py              módulo de predicción: el contrato que consumen el tablero y la API
 app/dashboard.py            tablero Streamlit (tres vistas de la maqueta)
 models/                     modelos entrenados (.joblib) y sus metadatos (.json)
-figures/                    EDA (01_EDA), baseline (02_model), CV (03_cv), escalera (04_escalera)
+figures/                    EDA (01_EDA), baseline (02_model), barrido MLflow de Yeisson (03_mlflow), CV (03_cv), escalera (04_escalera)
 Mockup/                     maqueta del prototipo (SPA) — ver Mockup/README.md
-docs/                       documentos de las entregas y guías (MLFLOW_EC2.md)
+docs/                       documentos de las entregas, guías (MLFLOW_EC2.md) y soportes (soportes/entrega2: pantallazos de EC2 y MLflow, tablero)
 requirements.txt            dependencias, con las del artefacto del modelo fijadas
 CHANGELOG.md                registro de cambios del proyecto
 ```
