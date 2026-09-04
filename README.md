@@ -3,7 +3,10 @@
 Micro-proyecto — Proyecto Desarrollo de Soluciones, MAIA Uniandes 2026-2, Grupo 23.
 En colaboración con la **Fundación Canguro**.
 
-**Maqueta publicada:** https://fromerom1.github.io/microproyecto-pds-grupo23/Mockup/
+**Maqueta (Entrega 1):** https://fromerom1.github.io/microproyecto-pds-grupo23/Mockup/
+
+**Tablero (Entrega 2):** `python -m streamlit run app/dashboard.py` desde la raíz del repositorio, 
+es una aplicación Streamlit sobre el modelo real y no puede servirse desde GitHub Pages.
 
 ---
 
@@ -83,9 +86,9 @@ src/experimento_escalera.py cuánto mejora la predicción con cada visita de seg
 src/predict.py              módulo de predicción: el contrato que consumen el tablero y la API
 app/dashboard.py            tablero Streamlit (tres vistas de la maqueta)
 models/                     modelos entrenados (.joblib) y sus metadatos (.json)
-figures/                    EDA (01_EDA), baseline (02_model), CV (03_cv), escalera (04_escalera)
+figures/                    EDA (01_EDA), baseline (02_model), barrido MLflow de Yeisson (03_mlflow), CV (03_cv), escalera (04_escalera)
 Mockup/                     maqueta del prototipo (SPA) — ver Mockup/README.md
-docs/                       documentos de las entregas y guías (MLFLOW_EC2.md)
+docs/                       documentos de las entregas, guías (MLFLOW_EC2.md) y soportes (soportes/entrega2: pantallazos de EC2 y MLflow, tablero)
 requirements.txt            dependencias, con las del artefacto del modelo fijadas
 CHANGELOG.md                registro de cambios del proyecto
 ```
@@ -125,7 +128,7 @@ python -m src.train_stunting --model lr --C 0.1
 python -m src.predict --demo
 
 # Tablero
-streamlit run app/dashboard.py
+python -m streamlit run app/dashboard.py
 ```
 
 `evaluate_cv` deja en `models/model_stunting_<horizonte>_cv.joblib` el modelo de 16
@@ -220,7 +223,3 @@ acuerdo de confidencialidad— esto debe revisarse antes de recibirlos.
 ## Equipo
 
 Grupo 23 · Maestría en Inteligencia Artificial, Universidad de los Andes.
-
-Cada integrante documenta su aporte a través de los commits del repositorio. Para que
-GitHub los atribuya correctamente, el correo de `git config user.email` debe estar
-registrado en la cuenta de GitHub de cada quien.
