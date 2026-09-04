@@ -70,14 +70,24 @@ colocarse en `data/plosmed_data_newid.csv`.
 ## Estructura del repositorio
 
 ```
-.dvc/                    configuración de DVC (remoto S3)
-data/                    dataset versionado con DVC (el CSV no está en Git)
-docs/                    documentos de las entregas
-figures/01_EDA/          figuras generadas por el análisis exploratorio
-notebooks/01_EDA.ipynb   análisis exploratorio
-Mockup/                  maqueta del prototipo (SPA) — ver Mockup/README.md
-requirements.txt         dependencias de Python
-CHANGELOG.md             registro de cambios del proyecto
+.dvc/                       configuración de DVC (remoto S3)
+data/plosmed_data_newid.csv.dvc   dataset crudo, versionado con DVC (el CSV no está en Git)
+data/processed/             dataset plano de modelado (una fila por bebé, 16 features + targets)
+notebooks/01_EDA.ipynb      análisis exploratorio
+notebooks/02_modelado.ipynb baseline de modelado (LR / RF / GB)
+src/preprocessing.py        contrato de modelado y preprocesamiento — fuente única de verdad
+src/train_stunting.py       entrenamiento con un split y registro en MLflow (barrido de hiperparámetros)
+src/evaluate_cv.py          evaluación robusta: CV estratificada repetida, IC, punto de operación, MLflow
+src/features.py             dataset del experimento escalera desde el CSV crudo (z-scores tempranos)
+src/experimento_escalera.py cuánto mejora la predicción con cada visita de seguimiento
+src/predict.py              módulo de predicción: el contrato que consumen el tablero y la API
+app/dashboard.py            tablero Streamlit (tres vistas de la maqueta)
+models/                     modelos entrenados (.joblib) y sus metadatos (.json)
+figures/                    EDA (01_EDA), baseline (02_model), CV (03_cv), escalera (04_escalera)
+Mockup/                     maqueta del prototipo (SPA) — ver Mockup/README.md
+docs/                       documentos de las entregas y guías (MLFLOW_EC2.md)
+requirements.txt            dependencias, con las del artefacto del modelo fijadas
+CHANGELOG.md                registro de cambios del proyecto
 ```
 
 ## Cómo reproducir el análisis exploratorio
@@ -92,6 +102,72 @@ jupyter notebook 01_EDA.ipynb
 El notebook usa rutas relativas a su propia carpeta, así que debe ejecutarse desde
 `notebooks/`. Las figuras que genera quedan en `notebooks/figures/`; las versionadas
 para el reporte están en `figures/01_EDA/`.
+
+## Cómo entrenar, evaluar y usar el modelo
+
+Todo se ejecuta **desde la raíz del repositorio** con `python -m`, para que `src/` sea
+importable. Es lo que garantiza que el modelo serializado pueda abrirse después desde
+el tablero, la API o un contenedor.
+
+```bash
+# Evaluación robusta (CV estratificada 5x10, 7 configuraciones) — ~4 min
+python -m src.evaluate_cv --target 24m
+python -m src.evaluate_cv --target 12m
+
+# Experimento escalera: requiere el CSV crudo (dvc pull o descarga de Zenodo) — ~6 min
+python -m src.features                  # construye data/processed/model_dataset_escalera.csv
+python -m src.experimento_escalera      # 4 peldaños x 2 horizontes x 2 familias, CV 5x10
+
+# Barrido de una configuración con un solo split (un run por corrida)
+python -m src.train_stunting --model lr --C 0.1
+
+# Prueba rápida del módulo de predicción
+python -m src.predict --demo
+
+# Tablero
+streamlit run app/dashboard.py
+```
+
+`evaluate_cv` deja en `models/model_stunting_<horizonte>_cv.joblib` el modelo de 16
+variables basales; `experimento_escalera` deja en `models/model_stunting_<horizonte>_B.joblib`
+el del peldaño B (16 basales + z-scores al nacer). En ambos casos el `.json` contiguo
+guarda umbrales de banda, curva sensibilidad-vs-capacidad y métricas de CV. **El tablero
+y `predict.py` usan B si existe**, porque es el mejor modelo con información disponible
+al ingreso.
+
+### El experimento escalera
+
+Cuatro bloques acumulativos de variables, cada uno un momento clínico real, evaluados con
+la misma CV 5×10. Responde a *¿en qué momento la predicción se vuelve confiable?*
+
+| Peldaño | Variables | ROC-AUC 24 m | ROC-AUC 12 m |
+|---|---|---|---|
+| A · basales (ingreso) | 16 | 0.58 [0.48, 0.72] | 0.68 [0.57, 0.81] |
+| B · + z-scores al nacer | 19 | **0.72** [0.61, 0.84] | **0.79** [0.67, 0.88] |
+| C · + semana 3 | 23 | 0.75 [0.63, 0.87] | 0.81 [0.67, 0.90] |
+| D · + mes 3 | 27 | 0.79 [0.68, 0.89] | 0.85 [0.73, 0.94] |
+
+El salto grande está en **B**: la antropometría al nacer, que se mide en el parto y ya se
+conoce al ingreso. El contrato original de 16 variables la omitía. El random forest
+reproduce la misma escalera, así que el patrón no depende de la familia de modelo.
+
+**MLflow.** Sin configuración, los scripts registran en `./mlruns` (local). Para
+registrar en el servidor del equipo en EC2:
+
+```bash
+export MLFLOW_TRACKING_URI=http://<ip>:8050      # PowerShell: $env:MLFLOW_TRACKING_URI = "..."
+```
+
+La guía completa de la máquina, los pantallazos que pide la rúbrica y cómo detenerla
+sin terminarla está en [`docs/MLFLOW_EC2.md`](docs/MLFLOW_EC2.md).
+
+### Por qué validación cruzada y no un solo split
+
+Con 333 bebés, un split 70/15/15 deja ~49 en test. Medido con 20 semillas distintas, el
+ROC-AUC de test del mismo modelo oscila entre **0.43 y 0.81**: ese número describe a la
+semilla, no al modelo. La CV estratificada repetida (50 evaluaciones) da una media con
+intervalo de confianza, y la regla de un error estándar elige, entre las configuraciones
+estadísticamente indistinguibles, la más simple.
 
 ---
 
@@ -125,17 +201,14 @@ Backlog conocido, para no perderlo de vista al entrar en la fase de modelado:
 - **Pipeline de DVC.** Hoy DVC versiona un archivo suelto; no existe `dvc.yaml` con
   etapas, así que no hay linaje entre datos crudos, features y modelo. Necesario
   desde la semana 4.
-- **Estructura `src/`.** Todo el código vive en el notebook. La Entrega 3 pide
-  empaquetar modelos y servirlos por API, y eso no se importa desde un `.ipynb`.
-- **Versiones en `requirements.txt`.** Sin fijar. La imagen de Docker que se
-  construya en septiembre no será necesariamente la misma que corre hoy.
-- **Salida del notebook sin versionar.** `data/processed/model_dataset.csv` se genera
-  en el Paso 9.2 pero no está en Git ni en DVC; debería ser salida de una etapa del
-  pipeline y no un efecto secundario del notebook.
-- **Tamaño de muestra.** 333 bebés, con 95 casos positivos a 24 meses y 47 a 12
-  meses. Una partición train/test única no discrimina: hace falta validación cruzada
-  estratificada repetida con intervalos por bootstrap, reportar AUC-PR además de
-  AUC-ROC, y fijar un punto de operación por capacidad de seguimiento.
+- **Calibración.** Con `class_weight="balanced"` el modelo sobreestima las
+  probabilidades (curva de calibración en `figures/03_cv/`). Para priorizar importa
+  el orden, no el valor absoluto, pero si el tablero muestra probabilidades conviene
+  calibrar (`CalibratedClassifierCV`) antes de la Entrega 3.
+- **Peldaños C y D en el tablero.** El tablero usa B (ingreso). Para C y D haría falta
+  una vista de "actualizar riesgo en el control" que reciba los z-scores de la visita.
+- **API.** `src/predict.py` ya expone el contrato (`predecir`, `predecir_lote`,
+  `punto_operacion`, `info`); falta envolverlo en FastAPI y contenerizar.
 
 ## Nota sobre la publicación
 

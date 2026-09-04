@@ -1,25 +1,35 @@
 # =====================================================
 # Microproyecto PDS - Grupo 23
-# Dependencias: EDA + modelado + tracking + interpretabilidad
+# Dependencias: EDA + modelado + tracking + tablero
 # (Python 3.11-3.12, Ubuntu 24.04)
+#
+# Las librerias que participan en el pickle del modelo van FIJADAS:
+# un .joblib guardado con una version de scikit-learn no tiene garantia
+# de cargar con otra, y el tablero, la API y el contenedor de la
+# Entrega 3 tienen que abrir exactamente el mismo artefacto.
+# Versiones verificadas el 2026-09-04 con la evaluacion CV y el tablero.
 # =====================================================
 
-# --- Núcleo científico / EDA ---
-numpy>=1.26
-pandas>=2.2
+# --- Nucleo cientifico (fijadas: participan en el artefacto del modelo) ---
+numpy==2.4.4
+pandas==2.3.3
+scikit-learn==1.8.0
+joblib==1.5.3
+
+# --- Figuras ---
 matplotlib>=3.8
 seaborn>=0.13
 
-# --- Modelado ---
-scikit-learn>=1.4
-
-# --- Interpretabilidad (SHAP para el tablero, Entregas 2-3) ---
+# --- Interpretabilidad ---
 shap>=0.45
 
 # --- Tracking de experimentos ---
-# Versión validada en la VM del Taller 4 (MLflow 3.x es inestable
-# para experimentos clásicos de scikit-learn con SQLite)
+# Version validada en la VM del Taller 4 (MLflow 3.x es inestable
+# para experimentos clasicos de scikit-learn con SQLite)
 mlflow==2.22.5
+
+# --- Tablero (Entrega 2) ---
+streamlit>=1.40
 
 # --- Entorno de desarrollo (notebooks) ---
 jupyter>=1.0
