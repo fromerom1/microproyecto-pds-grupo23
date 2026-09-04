@@ -219,3 +219,7 @@ __marimo__/
 
 
 .venv
+# --- Tracking local de MLflow (no versionar) ---
+mlruns/
+mlartifacts/
+run_summary.png

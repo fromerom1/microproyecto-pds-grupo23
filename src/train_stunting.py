@@ -17,8 +17,9 @@ Experimentos MLflow multi-familia:
   * --model lr : Regr. Logistica (C, penalty)   <- regularizacion como "hiperparametro"
   * --model gb : Gradient Boosting (n_estimators, max_depth)
 
-Uso local: python train_stunting.py --model lr --C 0.1
-Uso VM:    python3 train_stunting.py --model rf --n-estimators 500 --max-depth 0 --max-features 8
+Uso (desde la raiz del repo, para que src/ sea importable):
+    python -m src.train_stunting --model lr --C 0.1
+    python -m src.train_stunting --model rf --n-estimators 500 --max-depth 0 --max-features 8
 """
 
 import argparse
@@ -28,11 +29,7 @@ import matplotlib
 matplotlib.use("Agg")                      # VM sin interfaz grafica
 import matplotlib.pyplot as plt
 
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.model_selection import GroupShuffleSplit
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
@@ -45,48 +42,20 @@ import mlflow.sklearn
 SEED = 42
 
 # ---------------------------------------------------------------------------
-# 1. CONFIGURACION (contrato de modelado del EDA)
+# 1-2. CONTRATO DE MODELADO Y PREPROCESAMIENTO
 # ---------------------------------------------------------------------------
-CAT_SIN_MISSING = ['enrol_hiv_status_cat', 'momage_cat', 'educ_cat_n', 'marital_cat',
-                   'wealth_quintile', 'depression', 'mom_muac_cat', 'b1_sex', 'preterm']
-CAT_CON_MISSING = ['hfia_enr', 'parity', 'enrol_anemia', 'caesarean', 'sga', 'lbw']
-NUMERICAS       = ['gestage_final']
-FEATURES = CAT_SIN_MISSING + CAT_CON_MISSING + NUMERICAS
-TARGET   = 'stunted_24'
-
-
-# ---------------------------------------------------------------------------
-# 2. PIPELINE DE PREPROCESAMIENTO (se ajusta SOLO con el fold de train)
-# ---------------------------------------------------------------------------
-class Winsorizer(BaseEstimator, TransformerMixin):
-    """Recorta edades gestacionales biologicamente implausibles (>44 sem, EDA Paso 6)."""
-    def __init__(self, low=25.0, high=44.0):
-        self.low, self.high = low, high
-    def fit(self, X, y=None):
-        return self
-    def transform(self, X):
-        return np.clip(np.asarray(X, dtype=float), self.low, self.high)
-
-
-def build_preprocessor():
-    pipe_num = Pipeline([
-        ("winsor", Winsorizer(25.0, 44.0)),
-        ("imputa", SimpleImputer(strategy="median")),
-        ("escala", StandardScaler()),
-    ])
-    pipe_cat_ok = Pipeline([
-        ("imputa", SimpleImputer(strategy="most_frequent")),
-        ("onehot", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
-    ])
-    pipe_cat_na = Pipeline([
-        ("imputa", SimpleImputer(strategy="constant", fill_value="missing")),
-        ("onehot", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
-    ])
-    return ColumnTransformer([
-        ("num",    pipe_num,    NUMERICAS),
-        ("cat_ok", pipe_cat_ok, CAT_SIN_MISSING),
-        ("cat_na", pipe_cat_na, CAT_CON_MISSING),
-    ])
+# Viven en src/preprocessing.py (fuente unica de verdad). Motivo: si Winsorizer
+# se define aqui, al ejecutar `python train_stunting.py` queda pickleada como
+# `__main__.Winsorizer` y el modelo registrado en MLflow no puede cargarse desde
+# ningun otro proceso (tablero, API, contenedor). Importada desde un modulo
+# queda como `src.preprocessing.Winsorizer`, que si es importable.
+import sys
+from pathlib import Path
+_ROOT = Path(__file__).resolve().parents[1]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+from src.preprocessing import (CAT_SIN_MISSING, CAT_CON_MISSING, NUMERICAS,   # noqa: E402,F401
+                               FEATURES, TARGET, Winsorizer, build_preprocessor)
 
 
 # ---------------------------------------------------------------------------
