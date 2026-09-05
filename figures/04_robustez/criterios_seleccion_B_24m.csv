@@ -1,0 +1,5 @@
+criterio,piso,n_candidatas,candidatas,elegida
+implementado (media - DE entre folds),0.4542,4,"lr_C0.1, lr_buscada, gb_buscada, rf_buscada",lr_C0.1
+1-SE correcto (DE/sqrt(10)),0.5227,3,"lr_buscada, gb_buscada, rf_buscada",lr_buscada
+1-SE conservador (DE/sqrt(5)),0.5096,4,"lr_C0.1, lr_buscada, gb_buscada, rf_buscada",lr_C0.1
+maximo (sin regla),0.5544,1,lr_buscada,lr_buscada
