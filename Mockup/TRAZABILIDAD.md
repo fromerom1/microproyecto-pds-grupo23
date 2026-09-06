@@ -1,5 +1,12 @@
 # Trazabilidad de la maqueta con la pregunta de negocio
 
+> **Actualización (Entrega 2, 4 de septiembre de 2026).** Este documento describe la
+> maqueta de la Entrega 1 y su contrato de **16 variables basales**. El experimento
+> escalera de la Entrega 2 mostró que la antropometría al nacer (LAZ, WAZ y HCZ) es
+> el predictor más fuerte disponible al ingreso, y el contrato del tablero real pasó a
+> **19 variables**. El contrato vigente está en `src/preprocessing.py` y el tablero
+> en `app/dashboard.py`; ver `README.md` y `CHANGELOG.md`.
+
 Maqueta publicada en
 **https://fromerom1.github.io/microproyecto-pds-grupo23/Mockup/**
 

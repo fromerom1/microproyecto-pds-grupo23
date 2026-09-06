@@ -112,7 +112,8 @@ def importancias(clf, pre):
 # ---------------------------------------------------------------------------
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--data", default="model_dataset.csv")
+    ap.add_argument("--data", default=str(_ROOT / "data" / "processed" / "model_dataset.csv"),
+                    help="CSV plano de modelado (por defecto, el del repositorio)")
     ap.add_argument("--model", default="rf", choices=["rf", "lr", "gb"],
                     help="Familia del modelo: rf (default), lr o gb")
     # Hiperparametros RF / GB
@@ -169,8 +170,8 @@ def main():
     fig.savefig("run_summary.png", dpi=120, bbox_inches="tight")
 
     # --- MLflow (misma logica del Taller 4) ---
-    # En la VM: servidor en la MISMA carpeta del script:
-    #   mlflow server -h 0.0.0.0 -p 8050 --allowed-hosts "localhost:8050,<IP>:8050"
+    # Registra en el servidor que indique MLFLOW_TRACKING_URI (p. ej. la EC2, puerto 8050)
+    # y, sin esa variable, en ./mlruns local. Ver docs/MLFLOW_EC2.md.
     mlflow.set_experiment("stunting-baseline-multi")
     run_name = (f"lr_C{args.C}_{args.penalty}" if args.model == "lr"
                 else f"{args.model}_{args.n_estimators}_d{args.max_depth}_f{args.max_features}")

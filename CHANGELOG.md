@@ -5,6 +5,46 @@ más reciente al más antiguo.
 
 ---
 
+## 4 de septiembre de 2026 (tarde) — Soportes de la Entrega 2 y correcciones
+
+*Ramas `docs/soportes-entrega2` y `fix/notebook-02-modelos` · Alejandro Mesa*
+
+### Añadido
+
+- **`docs/soportes/entrega2/`.** Pantallazos de los tres experimentos registrados en
+  MLflow sobre la EC2 `Microproyecto` (t2.medium, Ubuntu 24.04), con usuario e IP
+  visibles, y capturas del tablero.
+- **`.streamlit/config.toml`.** El tablero arranca sin el prompt de correo de Streamlit;
+  necesario para contenedores.
+
+### Corregido
+
+- **`notebooks/02_modelado.ipynb` guardaba el mismo modelo para 12 y 24 meses.** Los
+  pipelines de ambos horizontes compartían el mismo objeto estimador (scikit-learn no
+  clona los pasos al ajustar), así que el ajuste de 24 m sobrescribía al de 12 m y los
+  dos `.joblib` salían byte a byte iguales. Ahora `train_eval_model` usa `clone()`.
+  Además el notebook importa `Winsorizer` y el preprocesador desde `src/preprocessing.py`,
+  con lo que sus modelos cargan desde cualquier proceso, y `model_metadata.json` guarda
+  ruta relativa y un MD5 independiente del sistema operativo.
+- **`src/train_stunting.py`** busca el dataset en `data/processed/` por defecto; antes
+  fallaba al ejecutarse desde la raíz sin `--data`.
+- Comandos de documentación con `python -m streamlit`, que funcionan también con el
+  Python de la Microsoft Store; guía de EC2 con `--artifacts-destination`.
+
+---
+
+## 3–4 de septiembre de 2026 — Baseline multi-modelo y barrido en MLflow
+
+*Yeisson Useche*
+
+- **`src/train_stunting.py`** con tres familias (RF, LR, GB) elegibles por línea de
+  comandos y registro en MLflow; barrido de seis corridas (`stunting-baseline-multi`)
+  en una EC2, evidencia en `figures/03_mlflow/`.
+- **`notebooks/02_modelado.ipynb`** alineado con el barrido; decisión: regresión
+  logística en ambos horizontes por F1 de validación; figuras `figures/02_model/`.
+
+---
+
 ## 4 de septiembre de 2026 — Evaluación robusta, módulo de predicción y tablero
 
 *Rama `feat/evaluacion-cv-y-tablero` · Alejandro Mesa*

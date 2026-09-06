@@ -8,6 +8,15 @@ solo eso.
 El flujo es el mismo del Taller 4: una EC2 con Ubuntu 24.04, MLflow como servidor,
 y los scripts del repositorio registrando runs contra él.
 
+> **El equipo ya tiene una máquina.** El barrido de `train_stunting.py` (experimento
+> `stunting-baseline-multi`, 6 runs, `figures/03_mlflow/`) se registró el 3 de
+> septiembre en una EC2 con usuario `ubuntu`. Lo primero es registrar ahí mismo
+> `evaluate_cv` y la escalera (sección 4, preferiblemente por SSH en la misma máquina) para que los tres experimentos
+> queden en un solo servidor. Ojo con dos cosas: la IP pública cambia si la máquina se
+> detuvo, y los pantallazos de `figures/03_mlflow/` están recortados **sin la barra de
+> direcciones**, así que no cumplen por sí solos el requisito de "IP visible en
+> MLflow" — hay que retomarlos con la URL a la vista (sección 5).
+
 ---
 
 ## 1. Lanzar la instancia
@@ -54,11 +63,21 @@ source .venv/bin/activate
 mlflow server \
   --host 0.0.0.0 --port 8050 \
   --backend-store-uri sqlite:///mlflow.db \
-  --default-artifact-root ./mlartifacts
+  --artifacts-destination ./mlartifacts
 ```
 
+`--artifacts-destination` (y no `--default-artifact-root`) hace que los artefactos
+viajen **a través del servidor**. Con `--default-artifact-root ./mlartifacts` los runs
+lanzados desde otra máquina escribirían sus figuras en el disco de esa otra máquina y
+la interfaz en la EC2 los mostraría vacíos. Si el servidor ya está corriendo con
+`--default-artifact-root`, la opción A de la sección 4 (correr en la propia EC2)
+sigue funcionando; la B no subiría artefactos.
+
 > **Ojo:** `--allowed-hosts` es una opción de MLflow 3.x y **no existe en 2.22.5**
-> (la versión fijada en `requirements.txt`). Con 2.22.5 basta `--host 0.0.0.0`.
+> (la versión fijada en `requirements.txt`). Con 2.22.5 basta `--host 0.0.0.0`. Si el
+> servidor que ya corre en la EC2 es 3.x y rechaza la conexión por la IP pública
+> (error de *host* inválido), ahí sí: `--allowed-hosts "<IP-PUBLICA>:8050"`. Los
+> scripts del repo (cliente 2.22.5) registran sin problema contra un servidor 3.x.
 
 Abre en el navegador `http://<IP-PUBLICA>:8050`. Debe verse la interfaz vacía.
 
@@ -66,14 +85,15 @@ Para que el servidor sobreviva a que cierres la sesión SSH, usa `tmux` o `nohup
 
 ```bash
 nohup mlflow server --host 0.0.0.0 --port 8050 \
-  --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlartifacts \
+  --backend-store-uri sqlite:///mlflow.db --artifacts-destination ./mlartifacts \
   > mlflow.log 2>&1 &
 ```
 
 ## 4. Registrar los experimentos
 
-**Opción A — en la propia máquina** (la más simple, sin problemas de red).
-Segunda terminal SSH, desde la raíz del repo:
+**Opción A — en la propia máquina** (la más simple; es lo que hizo el barrido de
+`stunting-baseline-multi` y garantiza que los artefactos queden en la EC2).
+Segunda terminal SSH, desde la raíz del repo, con el clon actualizado (`git pull`):
 
 ```bash
 source .venv/bin/activate
@@ -83,29 +103,39 @@ export MLFLOW_TRACKING_URI=http://127.0.0.1:8050
 python -m src.evaluate_cv --target 24m
 python -m src.evaluate_cv --target 12m
 
-# Experimento escalera: necesita el CSV crudo (dvc pull), un run padre + 16 hijos
-python -m src.features
+# Experimento escalera, un run padre + 16 hijos. El dataset de la escalera ya esta
+# versionado en data/processed/; `features` solo hace falta para regenerarlo (dvc pull)
 python -m src.experimento_escalera
 
-# Barrido individual de hiperparametros (script de Yeisson), un run por corrida
-python -m src.train_stunting --model lr --C 0.1
-python -m src.train_stunting --model lr --C 1
-python -m src.train_stunting --model rf --n-estimators 300 --max-depth 6
-python -m src.train_stunting --model gb --n-estimators 150 --max-depth 3
+# Barrido con split unico (script de Yeisson), un run por corrida: las seis
+# configuraciones del experimento stunting-baseline-multi. OJO: --data es
+# obligatorio desde la raiz, el default del script es relativo a src/.
+D=data/processed/model_dataset.csv
+python -m src.train_stunting --data $D --model rf --n-estimators 200 --max-depth 6 --max-features 4
+python -m src.train_stunting --data $D --model rf --n-estimators 100 --max-depth 3 --max-features 2
+python -m src.train_stunting --data $D --model rf --n-estimators 500 --max-depth 0 --max-features 8
+python -m src.train_stunting --data $D --model lr --C 1.0
+python -m src.train_stunting --data $D --model lr --C 0.1
+python -m src.train_stunting --data $D --model gb --n-estimators 150 --max-depth 3 --max-features 4
 ```
 
 **Opción B — desde tu portátil**, registrando en la EC2. Solo cambia la URI:
 
 ```powershell
-$env:MLFLOW_TRACKING_URI = "http://<IP-PUBLICA>:8050"
+$env:MLFLOW_TRACKING_URI = "http://<IP-PUBLICA>:8050"   # la IP de la EC2 del equipo
 python -m src.evaluate_cv --target 24m
+python -m src.evaluate_cv --target 12m
+python -m src.experimento_escalera        # usa data/processed/model_dataset_escalera.csv, ya versionado
 ```
 
-Los artefactos (figuras, CSV de folds, el modelo) se suben al servidor.
+Los parámetros y métricas llegan siempre; las figuras, CSV de folds y el modelo
+solo si el servidor se levantó con `--artifacts-destination` (sección 3).
 
 ## 5. Los pantallazos que pide la rúbrica
 
-Tómalos **en la misma sesión**, con la IP visible. Cuatro capturas cubren el requisito:
+Tómalos **en la misma sesión**, con la IP visible, y **sin recortar la barra de
+direcciones del navegador**: es la única parte de la captura que prueba que MLflow
+corre en la EC2 y no en el portátil. Cuatro capturas cubren el requisito:
 
 1. **Consola de EC2 → Instances**, con la instancia seleccionada: se ve el
    *Public IPv4 address* y, arriba a la derecha, el usuario de AWS.

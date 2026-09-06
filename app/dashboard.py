@@ -11,7 +11,7 @@ El tablero NO importa scikit-learn ni el modelo directamente: consume
 src/predict.py, que es el mismo contrato que expondra la API en la Entrega 3.
 
 Ejecutar desde la raiz del repositorio:
-    streamlit run app/dashboard.py
+    python -m streamlit run app/dashboard.py
 """
 
 from __future__ import annotations
