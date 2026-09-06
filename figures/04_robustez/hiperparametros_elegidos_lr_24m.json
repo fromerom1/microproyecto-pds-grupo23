@@ -1,0 +1,52 @@
+[
+  {
+    "C": 0.24810409748678125,
+    "penalty": "l1",
+    "solver": "liblinear"
+  },
+  {
+    "C": 0.03148911647956861,
+    "penalty": "l1",
+    "solver": "liblinear"
+  },
+  {
+    "C": 0.03148911647956861,
+    "penalty": "l1",
+    "solver": "liblinear"
+  },
+  {
+    "C": 0.24810409748678125,
+    "penalty": "l1",
+    "solver": "liblinear"
+  },
+  {
+    "C": 0.03148911647956861,
+    "penalty": "l1",
+    "solver": "liblinear"
+  },
+  {
+    "C": 0.06071989493441298,
+    "penalty": "l1",
+    "solver": "liblinear"
+  },
+  {
+    "C": 0.03148911647956861,
+    "penalty": "l1",
+    "solver": "liblinear"
+  },
+  {
+    "C": 0.03148911647956861,
+    "penalty": "l1",
+    "solver": "liblinear"
+  },
+  {
+    "C": 0.03148911647956861,
+    "penalty": "l1",
+    "solver": "liblinear"
+  },
+  {
+    "C": 0.24810409748678125,
+    "penalty": "l1",
+    "solver": "liblinear"
+  }
+]
