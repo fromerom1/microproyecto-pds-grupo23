@@ -20,6 +20,7 @@ def test_health_reporta_cohorte_inexistente(tmp_path, monkeypatch, caplog) -> No
 
     assert response.status_code == 503
     assert response.json()["status"] == "error"
+    assert response.json()["detail"] == "La cohorte de referencia no está disponible."
     assert "API_COHORTE_PATH" in caplog.text
 
 
@@ -29,7 +30,7 @@ def test_model_info_reporta_cohorte_inexistente(tmp_path, monkeypatch) -> None:
         response = client.get("/model/info")
 
     assert response.status_code == 503
-    assert "API_COHORTE_PATH" in response.json()["detail"]
+    assert response.json()["detail"] == "La cohorte de referencia no está disponible."
 
 
 def test_health_reporta_cohorte_incompatible(tmp_path, monkeypatch) -> None:
@@ -42,8 +43,24 @@ def test_health_reporta_cohorte_incompatible(tmp_path, monkeypatch) -> None:
 
     assert response.status_code == 503
     assert response.json()["status"] == "error"
+    assert response.json()["detail"] == "La cohorte no contiene las variables requeridas."
     assert info.status_code == 503
-    assert "cohorte" in info.json()["detail"]
+    assert info.json()["detail"] == response.json()["detail"]
+
+
+def test_errores_internos_no_se_exponen(monkeypatch) -> None:
+    def fallar(*args, **kwargs):
+        raise RuntimeError("detalle interno")
+
+    monkeypatch.setattr("api.api.modelo_listo", fallar)
+    with TestClient(app) as client:
+        salud = client.get("/health")
+        info = client.get("/model/info")
+
+    assert salud.status_code == 503
+    assert salud.json()["detail"] == "El servicio no está disponible."
+    assert info.status_code == 503
+    assert info.json()["detail"] == "El servicio no está disponible."
 
 
 def test_docs() -> None:

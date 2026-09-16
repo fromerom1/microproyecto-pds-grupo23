@@ -1,6 +1,6 @@
 # API de riesgo nutricional
 
-Servicio FastAPI sobre `src.predict.ModeloRiesgo`. Recibe las categorías originales; el modelo se encarga del preprocesamiento. Ejecutar desde la raíz del repositorio para que el artefacto pueda importar `src.preprocessing.Winsorizer`.
+Servicio FastAPI sobre `src.predict.ModeloRiesgo`. Requiere Python 3.11 o superior. Recibe las categorías originales; el modelo se encarga del preprocesamiento. Ejecutar desde la raíz del repositorio para que el artefacto pueda importar `src.preprocessing.Winsorizer`.
 
 ## Arranque
 
@@ -52,10 +52,10 @@ Los registros deben incluir todas las `features` de la variante consultada. `/pr
 Si `API_COHORTE_PATH` apunta a un archivo inexistente, responde `503`:
 
 ```json
-{"status":"error","detail":"API_COHORTE_PATH no apunta a un archivo."}
+{"status":"error","detail":"La cohorte de referencia no está disponible."}
 ```
 
-En ese caso, `GET /model/info` también responde `503` con `{"detail":"API_COHORTE_PATH no apunta a un archivo."}`.
+En ese caso, `GET /model/info` también responde `503` con `{"detail":"La cohorte de referencia no está disponible."}`. Los detalles técnicos se registran en el log, no en la respuesta.
 
 `GET /model/info` responde, entre otros campos:
 

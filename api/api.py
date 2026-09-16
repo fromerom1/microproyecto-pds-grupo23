@@ -24,11 +24,31 @@ api_router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+class ServicioNoDisponible(Exception):
+    pass
+
+
+def motivo_503(error: Exception) -> str:
+    if isinstance(error, ServicioNoDisponible):
+        return str(error)
+    return "El servicio no está disponible."
+
+
 def modelo_listo(horizonte: str = "24m", variante: str | None = None):
-    modelo = obtener_modelo(horizonte, variante)
-    columnas = pd.read_csv(ruta_cohorte(), nrows=0).columns
+    try:
+        cohorte = ruta_cohorte()
+    except Exception as error:
+        raise ServicioNoDisponible("La cohorte de referencia no está disponible.") from error
+    try:
+        modelo = obtener_modelo(horizonte, variante)
+    except Exception as error:
+        raise ServicioNoDisponible("No se pudo cargar el modelo seleccionado.") from error
+    try:
+        columnas = pd.read_csv(cohorte, nrows=0).columns
+    except Exception as error:
+        raise ServicioNoDisponible("No se pudo leer la cohorte de referencia.") from error
     if not set(modelo.features).issubset(columnas):
-        raise ValueError("La cohorte no incluye las variables del modelo.")
+        raise ServicioNoDisponible("La cohorte no contiene las variables requeridas.")
     return modelo
 
 
@@ -46,7 +66,7 @@ def health() -> Health | JSONResponse:
         logger.exception("Fallo en /health: %s", error)
         return JSONResponse(
             status_code=503,
-            content=Health(status="error", detail=str(error)).model_dump(),
+            content=Health(status="error", detail=motivo_503(error)).model_dump(),
         )
     return Health(status="ok")
 
@@ -61,7 +81,7 @@ def modelo_actual(horizonte: str = "24m", variante: str | None = None):
     try:
         return modelo_listo(horizonte, variante)
     except Exception as error:
-        raise HTTPException(status_code=503, detail=str(error)) from error
+        raise HTTPException(status_code=503, detail=motivo_503(error)) from error
 
 
 def validar_registro(registro: dict, modelo, permitir_extras: bool = False) -> None:
