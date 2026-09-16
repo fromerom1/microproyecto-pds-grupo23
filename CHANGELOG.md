@@ -5,6 +5,55 @@ más reciente al más antiguo.
 
 ---
 
+## 16 de septiembre de 2026 (noche) — Pipeline DVC de datos y serialización para reproducibilidad
+
+*Yeisson Useche*
+
+### Añadido
+
+- **`dvc.yaml` y `dvc.lock`.** Pipeline de tres stages que orquesta el flujo completo
+  de datos y evaluación: `features` (construye el dataset escalera desde el crudo),
+  `evaluate` (CV 5×10 para ambos horizontes en un solo stage) y `escalera`
+  (experimento de cuatro peldaños). Ejecutado de punta a punta con entorno alineado
+  a `requirements.txt` (pandas 2.3.3, sklearn 1.8.0, mlflow 2.22.5). El stage
+  `evaluate` corre 24m y 12m en un solo comando porque DVC limpia los outputs antes
+  de ejecutar; un cmd de un solo target borraría las figuras del otro horizonte.
+- **`data/processed/.gitignore`.** Ignora los CSV de datos que ahora viven en DVC,
+  evitando que `git add` los arrastre accidentalmente al repositorio.
+
+### Cambiado
+
+- **`data/processed/model_dataset.csv` y `model_dataset_escalera.csv` migrados de
+  Git a DVC.** Ambos datasets se publicaron en el bucket S3 del equipo
+  (`s3://maia-microproyecto-g23-dvc-20262`, us-east-2). Git conserva únicamente los
+  punteros `.dvc` con hashes MD5. El dataset escalera es output del stage `features`
+  (versionado vía `dvc.lock`); el baseline es insumo standalone (versionado vía
+  `dvc add`). Cualquier compañero puede reconstruir los datos con `dvc pull`.
+
+### Corregido
+
+- **`src/experimento_escalera.py`: `n_jobs=1` en RandomForest.** El paralelismo
+  (`n_jobs=-1`) causaba estancamientos intermitentes en Windows dentro del pipeline
+  DVC por overhead de workers loky con datasets pequeños (n=333). La serialización
+  garantiza reproducibilidad estable sin pérdida de velocidad perceptible: cada fit
+  de RF tarda ~50 ms en serie, así que 800 fits completan en ~40 segundos.
+
+### Hallazgos
+
+- **El pipeline DVC reproduce exactamente los resultados de la escalera.** ROC-AUC
+  24 m: A 0.58 → B 0.72 (+0.14) → C 0.75 → D 0.79. 12 m: A 0.68 → B 0.79 (+0.11)
+  → C 0.81 → D 0.85. Coherente con la corrida original del 4 de septiembre.
+- **`evaluate` elige `lr_C0.1` por la regla de un error estándar** en ambos
+  horizontes; las siete configuraciones son indistinguibles a <1 DE. El modelo
+  sobreestima probabilidades (efecto de `class_weight="balanced"`); el orden es
+  válido para priorizar, el valor absoluto no está calibrado.
+- **Umbrales de banda (cohorte completa, peldaño B):** 24 m: alto ≥ 0.586,
+  medio ≥ 0.485. 12 m: alto ≥ 0.594, medio ≥ 0.405. Estos son los puntos de
+  operación que consume el tablero.
+
+---
+
+
 ## 4 de septiembre de 2026 (tarde) — Soportes de la Entrega 2 y correcciones
 
 *Ramas `docs/soportes-entrega2` y `fix/notebook-02-modelos` · Alejandro Mesa*

@@ -1,0 +1,73 @@
+schema: '2.0'
+stages:
+  features:
+    cmd: python -m src.features
+    deps:
+    - path: data/plosmed_data_newid.csv
+      hash: md5
+      md5: 2aa31842936ca81845ef29da3183cd75
+      size: 659212
+    - path: data/processed/model_dataset.csv
+      hash: md5
+      md5: 493798e633bb5f8384b6ad87108df862
+      size: 43348
+    - path: src/features.py
+      hash: md5
+      md5: 4a9d9142089caa2badc99557f2b7173a
+      size: 5481
+    - path: src/preprocessing.py
+      hash: md5
+      md5: 3138e6885cfcde54df869508b6a7e034
+      size: 7458
+    outs:
+    - path: data/processed/model_dataset_escalera.csv
+      hash: md5
+      md5: 87e3c2df7f9927de0bd1727f8ced99b4
+      size: 68154
+  evaluate:
+    cmd: python -m src.evaluate_cv --target 24m && python -m src.evaluate_cv 
+      --target 12m
+    deps:
+    - path: data/processed/model_dataset.csv
+      hash: md5
+      md5: 493798e633bb5f8384b6ad87108df862
+      size: 43348
+    - path: data/processed/model_dataset_escalera.csv
+      hash: md5
+      md5: 87e3c2df7f9927de0bd1727f8ced99b4
+      size: 68154
+    - path: src/evaluate_cv.py
+      hash: md5
+      md5: 87407e700aeab35764f5d30412fcdf72
+      size: 20557
+    - path: src/preprocessing.py
+      hash: md5
+      md5: 3138e6885cfcde54df869508b6a7e034
+      size: 7458
+    outs:
+    - path: figures/03_cv
+      hash: md5
+      md5: 9e17efeea15296bc7a8dee5ed0331eac.dir
+      size: 597614
+      nfiles: 21
+  escalera:
+    cmd: python -m src.experimento_escalera
+    deps:
+    - path: data/processed/model_dataset_escalera.csv
+      hash: md5
+      md5: 87e3c2df7f9927de0bd1727f8ced99b4
+      size: 68154
+    - path: src/experimento_escalera.py
+      hash: md5
+      md5: afbce6b59a91db88cf86c78006ef3581
+      size: 12346
+    - path: src/preprocessing.py
+      hash: md5
+      md5: 3138e6885cfcde54df869508b6a7e034
+      size: 7458
+    outs:
+    - path: figures/04_escalera
+      hash: md5
+      md5: f218ceab67660eca861ccc3a989d9a48.dir
+      size: 451493
+      nfiles: 21
