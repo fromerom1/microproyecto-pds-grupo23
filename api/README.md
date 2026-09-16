@@ -8,14 +8,12 @@ En PowerShell, desde la raíz del repositorio:
 
 ```powershell
 py -3.12 -m venv ".venv"
-$repo = (Get-Location).Path
-subst X: "$repo"
-Set-Location "X:\"
-& "X:\.venv\Scripts\python.exe" -m pip install -r "requirements.txt"
-& "X:\.venv\Scripts\python.exe" -m api
+& ".\.venv\Scripts\Activate.ps1"
+python -m pip install -r "requirements.txt"
+python -m api
 ```
 
-`X:` es un alias temporal para evitar el límite de rutas largas de Windows en este repositorio; debe estar libre. Al terminar: `subst X: /D`. En un entorno sin ese límite, basta activar `.venv`, instalar `requirements.txt` y ejecutar `python -m api`. Por defecto escucha en `0.0.0.0:8000`; la documentación interactiva queda en [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs). Para recarga durante desarrollo: `python -m uvicorn api.main:app --reload`.
+Por defecto escucha en `0.0.0.0:8000`; la documentación interactiva queda en [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs). Para recarga durante desarrollo: `python -m uvicorn api.main:app --reload`.
 
 `python -m api` admite `API_HOST` y `API_PORT`. `API_MODELS_DIR` cambia la carpeta de modelos y `API_COHORTE_PATH` el CSV de referencia. Si no se configuran, se usan `models/` y `data/processed/model_dataset_escalera.csv` (o `model_dataset.csv` si no existe el primero). El contenedor debe incluir `src/`, `models/` y los datos de referencia.
 
@@ -25,14 +23,14 @@ Todas las rutas de modelo aceptan `horizonte` y `variante` como parámetros de U
 
 | Ruta | Entrada | Salida |
 | --- | --- | --- |
-| `GET /health` | Ninguna | `status` |
+| `GET /health` | Ninguna | `status`; 503 si modelo o cohorte no están disponibles |
 | `GET /model/info` | Horizonte y variante opcionales | Datos del modelo, `features`, `features_extra`, `variantes_disponibles` |
 | `GET /model/options` | Horizonte y variante opcionales | Categorías conocidas de sus variables |
 | `POST /predict` | `registro` y parámetros opcionales | Probabilidad, banda, percentil y contribuciones |
 | `POST /predict/batch` | `registros`, `capacidad` opcional entre 0 y 1 | Lista ordenada con ranking; `seguimiento` si se indica capacidad |
-| `GET /model/operating-point` | `capacidad` entre 0 y 1 | Capacidad, sensibilidad, VPP y umbral esperados |
+| `GET /model/operating-point` | `capacidad` dentro de la curva del modelo | Capacidad, sensibilidad, VPP y umbral esperados |
 
-Los registros deben incluir todas las `features` de la variante consultada. `/predict` rechaza campos adicionales; `/predict/batch` permite identificadores y conserva los campos recibidos. Las categorías conocidas se validan con `/model/options`. Los campos nuevos sin categorías declaradas se entregan al pipeline sin inventar restricciones. Una combinación inexistente devuelve `404`; un registro o una capacidad inválidos, `422`.
+Los registros deben incluir todas las `features` de la variante consultada. `/predict` rechaza campos adicionales; `/predict/batch` permite identificadores y conserva los campos recibidos. `null` se entrega como dato faltante al modelo; los booleanos en campos numéricos devuelven `422`. Los JSON no definen las categorías: `/model/options` usa `ModeloRiesgo.opciones()`, que toma `CATEGORIAS` de `src/preprocessing.py`. Si se agregan categorías, esa fuente debe actualizarse por quien mantenga el preprocesamiento; los campos nuevos sin opciones conocidas se entregan al pipeline sin inventar restricciones. Una combinación inexistente devuelve `404`; un registro o una capacidad inválidos, `422`. Para `/model/operating-point`, el rango válido sale de `curva_capacidad` en el JSON del modelo y no se recorta silenciosamente.
 
 ### Ejemplos reales del modelo actual `24m/B`
 
@@ -40,6 +38,12 @@ Los registros deben incluir todas las `features` de la variante consultada. `/pr
 
 ```json
 {"status":"ok"}
+```
+
+Si el modelo o la cohorte no están disponibles, responde `503`:
+
+```json
+{"status":"error","detail":"Modelo o cohorte no disponibles."}
 ```
 
 `GET /model/info` responde, entre otros campos:
@@ -120,4 +124,16 @@ La capacidad es la proporción que puede recibir seguimiento. La sensibilidad es
 
 ## Pruebas
 
-Desde `X:\`, ejecutar `& "X:\.venv\Scripts\python.exe" -m pytest -q`. Las pruebas comparan la API con `ModeloRiesgo`, incluido el registro de `python -m src.predict --demo`; no dependen de probabilidades fijadas a mano.
+Desde la raíz del repositorio, con `.venv` activado, ejecutar `python -m pytest -q` o `pytest -q`. Las pruebas comparan la API con `ModeloRiesgo`, incluido el registro de `python -m src.predict --demo`; no dependen de probabilidades fijadas a mano.
+
+## Nota para Windows
+
+Si la ruta del repositorio supera el límite de Windows para bibliotecas instaladas, se puede crear un alias temporal antes de crear `.venv`:
+
+```powershell
+$repo = (Get-Location).Path
+subst X: "$repo"
+Set-Location "X:\"
+```
+
+Repetir desde `X:\` los comandos de arranque y pruebas anteriores. `X:` debe estar libre; al terminar, salir de esa unidad y ejecutar `subst X: /D`.

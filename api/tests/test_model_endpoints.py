@@ -1,9 +1,10 @@
+import numpy as np
 import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
 
 from api.main import app
-from api.modelos import modelos_disponibles
+from api.modelos import modelos_disponibles, obtener_modelo
 from src.predict import ModeloRiesgo
 
 
@@ -43,12 +44,38 @@ def registro_demo(modelo: ModeloRiesgo) -> dict:
     return registro
 
 
+def test_modelo_se_reutiliza() -> None:
+    assert obtener_modelo() is obtener_modelo()
+
+
 def test_predict_matches_model_with_defaults(cliente: TestClient, modelo: ModeloRiesgo) -> None:
     registro = registro_demo(modelo)
     response = cliente.post("/predict", json={"registro": registro})
 
     assert response.status_code == 200
     assert response.json() == modelo.predecir(registro)
+
+
+def test_predict_null_matches_nan(cliente: TestClient, modelo: ModeloRiesgo) -> None:
+    registro = registro_demo(modelo)
+    registro["sga"] = None
+    esperado = modelo.predecir({**registro, "sga": np.nan})
+
+    response = cliente.post("/predict", json={"registro": registro})
+
+    assert response.status_code == 200
+    assert response.json()["probabilidad"] == esperado["probabilidad"]
+
+
+def test_batch_null_matches_nan(cliente: TestClient, modelo: ModeloRiesgo) -> None:
+    registro = registro_demo(modelo)
+    registro["sga"] = None
+    esperado = modelo.predecir_lote(pd.DataFrame([{**registro, "sga": np.nan}]))
+
+    response = cliente.post("/predict/batch", json={"registros": [registro]})
+
+    assert response.status_code == 200
+    assert response.json()[0]["probabilidad"] == esperado["probabilidad"].iloc[0]
 
 
 def test_predict_accepts_horizon_and_variant(cliente: TestClient, modelo: ModeloRiesgo) -> None:
@@ -144,6 +171,20 @@ def test_predict_rejects_invalid_number(cliente: TestClient, modelo: ModeloRiesg
     assert response.status_code == 422
 
 
+@pytest.mark.parametrize("ruta", ["/predict", "/predict/batch"])
+def test_rejects_boolean_in_numeric_field(
+    cliente: TestClient, modelo: ModeloRiesgo, ruta: str
+) -> None:
+    registro = registro_demo(modelo)
+    registro["gestage_final"] = True
+    cuerpo = {"registros": [registro]} if ruta.endswith("batch") else {"registro": registro}
+
+    response = cliente.post(ruta, json=cuerpo)
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == {"numero_invalido": "gestage_final"}
+
+
 def test_predict_batch_matches_model_and_sorts_risk(
     cliente: TestClient, modelo: ModeloRiesgo
 ) -> None:
@@ -224,6 +265,16 @@ def test_operating_point_rejects_invalid_capacity(cliente: TestClient) -> None:
     response = cliente.get("/model/operating-point?capacidad=1.1")
 
     assert response.status_code == 422
+
+
+def test_operating_point_rejects_capacity_outside_curve(
+    cliente: TestClient, modelo: ModeloRiesgo
+) -> None:
+    maximo = max(punto["capacidad"] for punto in modelo.meta["curva_capacidad"])
+    response = cliente.get("/model/operating-point?capacidad=1")
+
+    assert response.status_code == 422
+    assert str(maximo) in str(response.json()["detail"])
 
 
 def test_model_info_reports_missing_model(cliente: TestClient) -> None:

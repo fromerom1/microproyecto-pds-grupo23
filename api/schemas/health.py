@@ -6,4 +6,5 @@ from pydantic import BaseModel
 
 
 class Health(BaseModel):
-    status: Literal["ok"]
+    status: Literal["ok", "error"]
+    detail: str | None = None

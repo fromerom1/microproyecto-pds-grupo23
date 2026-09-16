@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -57,14 +58,23 @@ def seleccionar_variante(horizonte: str, variante: str | None = None) -> str:
     return variantes[0]
 
 
-def obtener_modelo(horizonte: str = "24m", variante: str | None = None) -> "ModeloRiesgo":
-    """Carga el ModeloRiesgo solicitado usando la configuracion actual."""
+@lru_cache(maxsize=16)
+def _cargar_modelo(
+    horizonte: str, variante: str, models_dir: Path, cohorte_path: Path
+) -> "ModeloRiesgo":
     from src.predict import ModeloRiesgo
 
-    variante_elegida = seleccionar_variante(horizonte, variante)
     return ModeloRiesgo(
         horizonte=horizonte,
-        variante=variante_elegida,
-        models_dir=directorio_modelos(),
-        cohorte_path=ruta_cohorte(),
+        variante=variante,
+        models_dir=models_dir,
+        cohorte_path=cohorte_path,
+    )
+
+
+def obtener_modelo(horizonte: str = "24m", variante: str | None = None) -> "ModeloRiesgo":
+    """Reutiliza el ModeloRiesgo solicitado segun la configuracion actual."""
+    variante_elegida = seleccionar_variante(horizonte, variante)
+    return _cargar_modelo(
+        horizonte, variante_elegida, directorio_modelos(), ruta_cohorte()
     )
