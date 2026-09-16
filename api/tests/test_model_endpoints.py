@@ -254,7 +254,8 @@ def test_model_options_are_filtered_to_model_features(
 
 
 def test_operating_point_matches_model(cliente: TestClient, modelo: ModeloRiesgo) -> None:
-    capacity = 0.2
+    curva = modelo.meta["curva_capacidad"]
+    capacity = curva[len(curva) // 2]["capacidad"]
     response = cliente.get(f"/model/operating-point?capacidad={capacity}")
 
     assert response.status_code == 200
@@ -270,11 +271,18 @@ def test_operating_point_rejects_invalid_capacity(cliente: TestClient) -> None:
 def test_operating_point_rejects_capacity_outside_curve(
     cliente: TestClient, modelo: ModeloRiesgo
 ) -> None:
-    maximo = max(punto["capacidad"] for punto in modelo.meta["curva_capacidad"])
-    response = cliente.get("/model/operating-point?capacidad=1")
+    capacidades = [punto["capacidad"] for punto in modelo.meta["curva_capacidad"]]
+    minimo, maximo = min(capacidades), max(capacidades)
+    if maximo < 1:
+        capacidad, limite = (maximo + 1) / 2, maximo
+    elif minimo > 0:
+        capacidad, limite = minimo / 2, minimo
+    else:
+        pytest.skip("La curva cubre todas las capacidades válidas.")
+    response = cliente.get(f"/model/operating-point?capacidad={capacidad}")
 
     assert response.status_code == 422
-    assert str(maximo) in str(response.json()["detail"])
+    assert str(limite) in str(response.json()["detail"])
 
 
 def test_model_info_reports_missing_model(cliente: TestClient) -> None:

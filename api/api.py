@@ -1,12 +1,14 @@
 """Rutas públicas de la API."""
 
+import logging
+
 import numpy as np
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
 
 from api.config import ruta_cohorte
-from api.modelos import modelos_disponibles, obtener_modelo
+from api.modelos import modelos_disponibles, obtener_modelo, seleccionar_variante
 from api.schemas import (
     Health,
     InfoModelo,
@@ -19,6 +21,15 @@ from api.schemas import (
 )
 
 api_router = APIRouter()
+logger = logging.getLogger(__name__)
+
+
+def modelo_listo(horizonte: str = "24m", variante: str | None = None):
+    modelo = obtener_modelo(horizonte, variante)
+    columnas = pd.read_csv(ruta_cohorte(), nrows=0).columns
+    if not set(modelo.features).issubset(columnas):
+        raise ValueError("La cohorte no incluye las variables del modelo.")
+    return modelo
 
 
 @api_router.get(
@@ -30,23 +41,27 @@ api_router = APIRouter()
 def health() -> Health | JSONResponse:
     """Comprueba que modelo y cohorte esten disponibles."""
     try:
-        modelo = obtener_modelo()
-        columnas = pd.read_csv(ruta_cohorte(), nrows=0).columns
-        if not set(modelo.features).issubset(columnas):
-            raise ValueError("La cohorte no incluye las variables del modelo.")
-    except Exception:
+        modelo_listo()
+    except Exception as error:
+        logger.exception("Fallo en /health: %s", error)
         return JSONResponse(
             status_code=503,
-            content=Health(status="error", detail="Modelo o cohorte no disponibles.").model_dump(),
+            content=Health(status="error", detail=str(error)).model_dump(),
         )
     return Health(status="ok")
 
 
 def modelo_actual(horizonte: str = "24m", variante: str | None = None):
     try:
-        return obtener_modelo(horizonte, variante)
+        seleccionar_variante(horizonte, variante)
     except ValueError as error:
+        if not modelos_disponibles():
+            raise HTTPException(status_code=503, detail="No hay modelos disponibles.") from error
         raise HTTPException(status_code=404, detail=str(error)) from error
+    try:
+        return modelo_listo(horizonte, variante)
+    except Exception as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
 
 
 def validar_registro(registro: dict, modelo, permitir_extras: bool = False) -> None:
@@ -78,7 +93,11 @@ def normalizar_faltantes(registro: dict) -> dict:
     return {campo: np.nan if valor is None else valor for campo, valor in registro.items()}
 
 
-@api_router.get("/model/info", response_model=InfoModelo)
+@api_router.get(
+    "/model/info",
+    response_model=InfoModelo,
+    responses={503: {"description": "Modelo o cohorte no disponibles"}},
+)
 def info_modelo(modelo=Depends(modelo_actual)) -> dict:
     return {
         **modelo.info,

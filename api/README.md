@@ -4,12 +4,21 @@ Servicio FastAPI sobre `src.predict.ModeloRiesgo`. Recibe las categorías origin
 
 ## Arranque
 
-En PowerShell, desde la raíz del repositorio:
+En Windows, desde PowerShell y la raíz del repositorio:
 
 ```powershell
 py -3.12 -m venv ".venv"
 & ".\.venv\Scripts\Activate.ps1"
 python -m pip install -r "requirements.txt"
+python -m api
+```
+
+En macOS o Linux, desde la raíz del repositorio:
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r requirements.txt
 python -m api
 ```
 
@@ -23,8 +32,8 @@ Todas las rutas de modelo aceptan `horizonte` y `variante` como parámetros de U
 
 | Ruta | Entrada | Salida |
 | --- | --- | --- |
-| `GET /health` | Ninguna | `status`; 503 si modelo o cohorte no están disponibles |
-| `GET /model/info` | Horizonte y variante opcionales | Datos del modelo, `features`, `features_extra`, `variantes_disponibles` |
+| `GET /health` | Ninguna | `status`; 503 con la causa si modelo o cohorte no están disponibles |
+| `GET /model/info` | Horizonte y variante opcionales | Datos del modelo y variables; 503 con la causa si falla la configuración |
 | `GET /model/options` | Horizonte y variante opcionales | Categorías conocidas de sus variables |
 | `POST /predict` | `registro` y parámetros opcionales | Probabilidad, banda, percentil y contribuciones |
 | `POST /predict/batch` | `registros`, `capacidad` opcional entre 0 y 1 | Lista ordenada con ranking; `seguimiento` si se indica capacidad |
@@ -40,11 +49,13 @@ Los registros deben incluir todas las `features` de la variante consultada. `/pr
 {"status":"ok"}
 ```
 
-Si el modelo o la cohorte no están disponibles, responde `503`:
+Si `API_COHORTE_PATH` apunta a un archivo inexistente, responde `503`:
 
 ```json
-{"status":"error","detail":"Modelo o cohorte no disponibles."}
+{"status":"error","detail":"API_COHORTE_PATH no apunta a un archivo."}
 ```
+
+En ese caso, `GET /model/info` también responde `503` con `{"detail":"API_COHORTE_PATH no apunta a un archivo."}`.
 
 `GET /model/info` responde, entre otros campos:
 
@@ -124,7 +135,24 @@ La capacidad es la proporción que puede recibir seguimiento. La sensibilidad es
 
 ## Pruebas
 
-Desde la raíz del repositorio, con `.venv` activado, ejecutar `python -m pytest -q` o `pytest -q`. Las pruebas comparan la API con `ModeloRiesgo`, incluido el registro de `python -m src.predict --demo`; no dependen de probabilidades fijadas a mano.
+Desde la raíz del repositorio, con `.venv` activado:
+
+```text
+python -m pytest -q
+```
+
+Las pruebas comparan la API con `ModeloRiesgo`, incluido el registro de `python -m src.predict --demo`; no dependen de probabilidades fijadas a mano.
+
+## Docker
+
+Cuando el equipo tenga una imagen con dependencias, `src/`, `models/`, datos y la raíz del repositorio como directorio de trabajo, reemplazar `NOMBRE_IMAGEN` por su nombre:
+
+```text
+docker run --rm -p 8000:8000 --entrypoint python NOMBRE_IMAGEN -m api
+docker run --rm --entrypoint python NOMBRE_IMAGEN -m pytest -q
+```
+
+Esos comandos ejecutan `python -m api` y `python -m pytest -q` dentro del contenedor. El Dockerfile lo prepara el equipo de despliegue.
 
 ## Nota para Windows
 
