@@ -8,6 +8,8 @@ En colaboración con la **Fundación Canguro**.
 **Tablero (Entrega 2):** `python -m streamlit run app/dashboard.py` desde la raíz del repositorio, 
 es una aplicación Streamlit sobre el modelo real y no puede servirse desde GitHub Pages.
 
+**Modelo Empaquetado (Entrega 3):** Modelos empaquetados, API, tablero en Docker, manuales, video
+
 ---
 
 ## El problema
@@ -68,14 +70,23 @@ Requiere credenciales de AWS con acceso al remoto declarado en `.dvc/config`. Si
 remoto no está disponible, el dataset es público: puede descargarse de Zenodo y
 colocarse en `data/plosmed_data_newid.csv`.
 
+
+### Archivos versionados en S3:
+
+data/plosmed_data_newid.csv (crudo, 659 KB)
+data/processed/model_dataset.csv (baseline 16 features, 43 KB)
+data/processed/model_dataset_escalera.csv (4 peldaños A/B/C/D, 68 KB)
+
 ---
 
 ## Estructura del repositorio
 
 ```
 .dvc/                       configuración de DVC (remoto S3)
-data/plosmed_data_newid.csv.dvc   dataset crudo, versionado con DVC (el CSV no está en Git)
-data/processed/             dataset plano de modelado (una fila por bebé, 16 features + targets)
+dvc.yaml                    pipeline DVC: features → evaluate → escalera
+dvc.lock                    grafo ejecutado y verificado
+data/plosmed_data_newid.csv.dvc   dataset crudo, versionado con DVC
+data/processed/             datasets procesados versionados en S3 (punteros .dvc)
 notebooks/01_EDA.ipynb      análisis exploratorio
 notebooks/02_modelado.ipynb baseline de modelado (LR / RF / GB)
 src/preprocessing.py        contrato de modelado y preprocesamiento — fuente única de verdad
@@ -86,11 +97,12 @@ src/experimento_escalera.py cuánto mejora la predicción con cada visita de seg
 src/predict.py              módulo de predicción: el contrato que consumen el tablero y la API
 app/dashboard.py            tablero Streamlit (tres vistas de la maqueta)
 models/                     modelos entrenados (.joblib) y sus metadatos (.json)
-figures/                    EDA (01_EDA), baseline (02_model), barrido MLflow de Yeisson (03_mlflow), CV (03_cv), escalera (04_escalera)
+figures/                    EDA (01_EDA), baseline (02_model), barrido MLflow (03_mlflow), CV (03_cv), escalera (04_escalera)
 Mockup/                     maqueta del prototipo (SPA) — ver Mockup/README.md
 docs/                       documentos de las entregas, guías (MLFLOW_EC2.md) y soportes (soportes/entrega2: pantallazos de EC2 y MLflow, tablero)
 requirements.txt            dependencias, con las del artefacto del modelo fijadas
 CHANGELOG.md                registro de cambios del proyecto
+
 ```
 
 ## Cómo reproducir el análisis exploratorio
@@ -111,6 +123,23 @@ para el reporte están en `figures/01_EDA/`.
 Todo se ejecuta **desde la raíz del repositorio** con `python -m`, para que `src/` sea
 importable. Es lo que garantiza que el modelo serializado pueda abrirse después desde
 el tablero, la API o un contenedor.
+
+### Pipeline DVC (recomendado)
+El pipeline orquesta las tres etapas principales y garantiza reproducibilidad:
+
+```bash
+# Ejecutar el pipeline completo de punta a punta
+dvc repro
+```
+Esto ejecuta:
+1. features: construye model_dataset_escalera.csv desde el CSV crudo
+2. evaluate: CV estratificada 5×10 para ambos horizontes (12m y 24m)
+3. escalera: 4 peldaños × 2 horizontes × 2 familias, CV 5×10
+
+El dvc.lock verifica que el pipeline se ejecutó con las versiones fijadas en requirements.txt (pandas 2.3.3, sklearn 1.8.0, mlflow 2.22.5)
+
+
+### Ejecución manual (etapa por etapa)
 
 ```bash
 # Evaluación robusta (CV estratificada 5x10, 7 configuraciones) — ~4 min
@@ -201,9 +230,6 @@ con Chart.js.
 
 Backlog conocido, para no perderlo de vista al entrar en la fase de modelado:
 
-- **Pipeline de DVC.** Hoy DVC versiona un archivo suelto; no existe `dvc.yaml` con
-  etapas, así que no hay linaje entre datos crudos, features y modelo. Necesario
-  desde la semana 4.
 - **Calibración.** Con `class_weight="balanced"` el modelo sobreestima las
   probabilidades (curva de calibración en `figures/03_cv/`). Para priorizar importa
   el orden, no el valor absoluto, pero si el tablero muestra probabilidades conviene
