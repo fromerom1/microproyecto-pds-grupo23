@@ -64,7 +64,7 @@ AZUL, ROJO, GRIS, VERDE = "#1f5f8b", "#a33235", "#8a929e", "#2c6e49"
 MODELOS = {
     "lr_C0.1": lambda: LogisticRegression(C=0.1, class_weight="balanced", max_iter=2000, random_state=SEED),
     "rf_d6":   lambda: RandomForestClassifier(n_estimators=200, max_depth=6, min_samples_leaf=5,
-                                              class_weight="balanced", random_state=SEED, n_jobs=-1),
+                                              class_weight="balanced", random_state=SEED, n_jobs=1),
 }
 
 

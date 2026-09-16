@@ -1,0 +1,33 @@
+﻿# Pipeline DVC - Entrega 3 (features, evaluacion y escalera)
+# Datasets procesados versionados en S3; figuras quedan en Git (cache: false).
+stages:
+  features:
+    cmd: python -m src.features
+    deps:
+      - data/plosmed_data_newid.csv
+      - data/processed/model_dataset.csv
+      - src/features.py
+      - src/preprocessing.py
+    outs:
+      - data/processed/model_dataset_escalera.csv
+
+  evaluate:
+    cmd: python -m src.evaluate_cv --target 24m && python -m src.evaluate_cv --target 12m
+    deps:
+      - data/processed/model_dataset.csv
+      - data/processed/model_dataset_escalera.csv
+      - src/evaluate_cv.py
+      - src/preprocessing.py
+    outs:
+      - figures/03_cv:
+          cache: false
+
+  escalera:
+    cmd: python -m src.experimento_escalera
+    deps:
+      - data/processed/model_dataset_escalera.csv
+      - src/experimento_escalera.py
+      - src/preprocessing.py
+    outs:
+      - figures/04_escalera:
+          cache: false
