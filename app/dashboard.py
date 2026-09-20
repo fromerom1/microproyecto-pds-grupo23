@@ -1,24 +1,35 @@
 """
 Tablero de apoyo a la priorizacion de seguimiento nutricional.
-Micro-proyecto PDS - Grupo 23 - Entrega 2.
+Micro-proyecto PDS - Grupo 23 - Entrega 2/3.
 
 Tres vistas, las mismas de la maqueta (Mockup/):
     Cohorte           que tan grande es el problema y en quien se concentra
     Riesgo individual la prediccion para un bebe y por que
     Priorizacion      a quien ver primero, dada la capacidad del programa
 
-El tablero NO importa scikit-learn ni el modelo directamente: consume
-src/predict.py, que es el mismo contrato que expondra la API en la Entrega 3.
+El tablero NO importa scikit-learn ni el modelo directamente: consume la API
+de api/ (GET /model/variants, GET /model/info, POST /predict, POST
+/predict/batch, GET /model/operating-point), como exige el enunciado ("el
+tablero que consume el modelo a traves de esa API"). La unica excepcion es el
+panel de importancia de variables para la variante "B": necesita coeficientes
+del pipeline que la API todavia no expone como endpoint, asi que carga el
+artefacto local solo para ese panel y se omite si no esta disponible (por
+ejemplo si el tablero corre contra una API remota sin modelos locales).
 
-Ejecutar desde la raiz del repositorio:
+Arranque (con la API corriendo aparte, ver api/README.md):
     python -m streamlit run app/dashboard.py
+
+Variables de entorno:
+    DASHBOARD_API_URL   base de la API (por defecto http://localhost:8000)
 """
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
+import httpx
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -29,9 +40,9 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-from src.predict import ModeloRiesgo                                      # noqa: E402
-from src.preprocessing import (CATEGORIAS, FEATURE_LABELS, FEATURES,     # noqa: E402
-                               CAT_SIN_MISSING, CAT_CON_MISSING, TARGETS)
+from src.preprocessing import CATEGORIAS, TARGETS                         # noqa: E402
+
+API_URL = os.environ.get("DASHBOARD_API_URL", "http://localhost:8000").rstrip("/")
 
 # ---------------------------------------------------------------------------
 st.set_page_config(page_title="Riesgo nutricional temprano · Grupo 23",
@@ -59,9 +70,88 @@ def etq(v): return ETIQ_VALOR.get(v, v)
 
 
 # ---------------------------------------------------------------------------
-@st.cache_resource(show_spinner="Cargando modelo…")
-def cargar_modelo(horizonte: str) -> ModeloRiesgo:
-    return ModeloRiesgo(horizonte)
+# Cliente de la API (GET /model/variants, /model/info, /model/operating-point,
+# POST /predict, /predict/batch — el contrato completo esta en api/README.md)
+# ---------------------------------------------------------------------------
+class ApiError(RuntimeError):
+    """La API no respondio, o respondio con un error de negocio (4xx/5xx)."""
+
+
+def _api_call(method: str, path: str, **kwargs) -> dict | list:
+    try:
+        r = httpx.request(method, f"{API_URL}{path}", timeout=kwargs.pop("timeout", 10), **kwargs)
+    except httpx.HTTPError as error:
+        raise ApiError(f"No se pudo conectar con la API en {API_URL}{path} ({error}).") from error
+    if r.status_code >= 400:
+        try:
+            detalle = r.json().get("detail", r.text)
+        except Exception:
+            detalle = r.text
+        raise ApiError(f"{path} respondió {r.status_code}: {detalle}")
+    return r.json()
+
+
+@st.cache_data(ttl=30, show_spinner=False)
+def api_variantes() -> dict[str, list[str]]:
+    """GET /model/variants -> horizontes y variantes disponibles."""
+    return _api_call("GET", "/model/variants")
+
+
+@st.cache_data(ttl=30, show_spinner=False)
+def api_info(horizonte: str, variante: str) -> dict:
+    """GET /model/info -> metadatos del modelo, incluida la curva de capacidad."""
+    return _api_call("GET", "/model/info", params={"horizonte": horizonte, "variante": variante})
+
+
+def api_predecir(horizonte: str, variante: str, registro: dict) -> dict:
+    """POST /predict -> probabilidad, banda, percentil, contribuciones y variante usada."""
+    return _api_call("POST", "/predict", params={"horizonte": horizonte, "variante": variante},
+                     json={"registro": registro})
+
+
+@st.cache_data(ttl=30, show_spinner="Consultando la API…")
+def api_predecir_lote(horizonte: str, variante: str, registros: list[dict],
+                      capacidad: float) -> list[dict]:
+    """POST /predict/batch -> lista ordenada por riesgo, con banda y variante por fila."""
+    return _api_call("POST", "/predict/batch",
+                     params={"horizonte": horizonte, "variante": variante, "capacidad": capacidad},
+                     json={"registros": registros}, timeout=30)
+
+
+def api_punto_operacion(horizonte: str, variante: str, capacidad: float,
+                        curva_capacidad: list[dict]) -> dict:
+    """GET /model/operating-point -> sensibilidad/VPP/umbral esperados a esa capacidad.
+
+    La API no recorta la capacidad al rango valido (lo hace explicito en su
+    contrato); se ajusta aqui contra la propia curva del modelo, igual que
+    antes hacia ModeloRiesgo.punto_operacion localmente.
+    """
+    curva = pd.DataFrame(curva_capacidad)
+    capacidad_ajustada = float(np.clip(capacidad, curva.capacidad.min(), curva.capacidad.max()))
+    return _api_call("GET", "/model/operating-point",
+                     params={"horizonte": horizonte, "variante": variante,
+                             "capacidad": capacidad_ajustada})
+
+
+def _registros_seguros(df: pd.DataFrame) -> list[dict]:
+    """dict JSON-serializable por fila: NaN -> None, escalares numpy -> nativos de Python."""
+    limpio = df.where(pd.notna(df), None)
+    registros = []
+    for fila in limpio.to_dict(orient="records"):
+        registros.append({k: (v.item() if isinstance(v, np.generic) else v) for k, v in fila.items()})
+    return registros
+
+
+@st.cache_resource(show_spinner=False)
+def _modelo_local(horizonte: str, variante: str):
+    """Solo para el panel de importancia de variables (coeficientes/SHAP del
+    pipeline): la API no lo expone todavia. Si no hay artefactos locales
+    (p. ej. el tablero corre contra una API remota), el panel se omite."""
+    try:
+        from src.predict import ModeloRiesgo
+        return ModeloRiesgo(horizonte, variante)
+    except Exception:
+        return None
 
 
 @st.cache_data
@@ -70,39 +160,47 @@ def cargar_cohorte() -> pd.DataFrame:
     return pd.read_csv(esc if esc.exists() else ROOT / "data/processed/model_dataset.csv")
 
 
-@st.cache_data
-def scores_cohorte(horizonte: str, capacidad: float) -> pd.DataFrame:
-    return cargar_modelo(horizonte).predecir_lote(cargar_cohorte(), capacidad=capacidad)
-
-
-def horizontes_disponibles():
-    return [h for h in TARGETS
-            if (ROOT / f"models/model_stunting_{h}_B.joblib").exists()
-            or (ROOT / f"models/model_stunting_{h}_cv.joblib").exists()]
+@st.cache_data(ttl=30, show_spinner="Consultando la API…")
+def scores_cohorte(horizonte: str, variante: str, capacidad: float) -> pd.DataFrame:
+    registros = _registros_seguros(cargar_cohorte())
+    resultados = api_predecir_lote(horizonte, variante, registros, capacidad)
+    return pd.DataFrame(resultados)
 
 
 # ---------------------------------------------------------------------------
 # Barra lateral
 # ---------------------------------------------------------------------------
-disponibles = horizontes_disponibles()
+try:
+    disponibles = api_variantes()
+except ApiError as error:
+    st.error(f"No se pudo conectar con la API de predicción en `{API_URL}`.\n\n"
+             f"{error}\n\nVerifica que esté corriendo (`python -m api` desde la raíz del "
+             f"repositorio) o ajusta `DASHBOARD_API_URL`.")
+    st.stop()
 if not disponibles:
-    st.error("No hay modelos entrenados. Ejecuta primero `python -m src.evaluate_cv` desde la raíz del repositorio.")
+    st.error("La API respondió pero no reporta modelos disponibles.")
     st.stop()
 
 with st.sidebar:
     st.title("Riesgo nutricional temprano")
     st.caption("Cohorte de seguimiento · Grupo 23")
-    horizonte = st.radio("Horizonte de predicción", disponibles,
+    horizonte = st.radio("Horizonte de predicción", list(disponibles.keys()),
                          format_func=lambda h: f"{h[:-1]} meses", horizontal=True)
+    variante = st.radio("Variante del modelo", disponibles[horizonte], horizontal=True,
+                        help="B: 16 basales + Z-scores al nacer (experimento escalera). "
+                             "cv: 16 basales solamente, validación cruzada.")
     capacidad = st.slider("Capacidad de seguimiento estrecho", 5, 50, 20, 5,
                           format="%d%%",
                           help="Porcentaje de la cohorte que el programa puede vigilar de cerca. "
                                "Define el punto de operación y las bandas de riesgo.") / 100
     st.divider()
-    modelo = cargar_modelo(horizonte)
-    info = modelo.info
+    try:
+        info = api_info(horizonte, variante)
+    except ApiError as error:
+        st.error(f"No se pudo obtener /model/info de la API.\n\n{error}")
+        st.stop()
     st.caption("**Modelo**")
-    st.caption(f"{info['peldano']} · {info['n_features']} variables")
+    st.caption(f"{info['peldano']} · {info['n_features']} variables · variante `{info['variante']}`")
     st.code(f"{info['config']}  ·  {info['familia']}\n"
             f"ROC-AUC (CV 5×10): {info['roc_auc_cv']:.2f}  [{info['roc_auc_ci'][0]:.2f}, {info['roc_auc_ci'][1]:.2f}]\n"
             f"PR-AUC (CV):       {info['pr_auc_cv']:.2f}\n"
@@ -110,8 +208,12 @@ with st.sidebar:
             f"sklearn {info['sklearn']}", language=None)
 
 cohorte = cargar_cohorte()
-scores = scores_cohorte(horizonte, capacidad)
-po = modelo.punto_operacion(capacidad)
+try:
+    scores = scores_cohorte(horizonte, variante, capacidad)
+    po = api_punto_operacion(horizonte, variante, capacidad, info["curva_capacidad"])
+except ApiError as error:
+    st.error(f"La API falló al calcular los puntajes de la cohorte.\n\n{error}")
+    st.stop()
 
 # ---------------------------------------------------------------------------
 tab_cohorte, tab_individual, tab_prior = st.tabs(["Cohorte", "Riesgo individual", "Priorización"])
@@ -121,7 +223,7 @@ tab_cohorte, tab_individual, tab_prior = st.tabs(["Cohorte", "Riesgo individual"
 with tab_cohorte:
     st.subheader("Panorama de la cohorte")
     st.caption("Dimensiona el problema y muestra en quién se concentra. Las cifras de la cohorte "
-               "provienen del dataset; las de riesgo, del modelo.")
+               "provienen del dataset; las de riesgo, del modelo (vía la API).")
 
     n = len(cohorte)
     c1, c2, c3, c4 = st.columns(4)
@@ -138,8 +240,8 @@ with tab_cohorte:
         st.markdown("**Distribución del riesgo estimado**")
         fig, ax = plt.subplots(figsize=(6.2, 3.2))
         ax.hist(scores.probabilidad, bins=20, color=AZUL, alpha=.85, edgecolor="white")
-        ax.axvline(modelo.meta["umbral_alto"], color=ROJO, ls="--", lw=1.5, label="Umbral riesgo alto")
-        ax.axvline(modelo.meta["umbral_medio"], color=AMBAR, ls="--", lw=1.5, label="Umbral riesgo medio")
+        ax.axvline(info["umbral_alto"], color=ROJO, ls="--", lw=1.5, label="Umbral riesgo alto")
+        ax.axvline(info["umbral_medio"], color=AMBAR, ls="--", lw=1.5, label="Umbral riesgo medio")
         ax.set_xlabel("Probabilidad estimada de desnutrición crónica"); ax.set_ylabel("Bebés")
         ax.legend(frameon=False, fontsize=8); ax.grid(alpha=.3)
         for s in ("top", "right"): ax.spines[s].set_visible(False)
@@ -153,19 +255,22 @@ with tab_cohorte:
 
     with der:
         st.markdown("**Variables que más pesan en el modelo**")
+        modelo_local = _modelo_local(horizonte, variante)
         p_imp = ROOT / f"figures/03_cv/importancias_{info['config']}_{horizonte}.csv"
-        if info["variante"] == "cv" and p_imp.exists():
+        if variante == "cv" and p_imp.exists():
             imp = pd.read_csv(p_imp, index_col=0).sort_values("media")
             xerr, xlabel = imp.de, "Importancia agregada · media ± DE entre 50 folds"
-        else:
+        elif modelo_local is not None:
             # |coeficiente| agregado por variable original, del modelo en uso
             from src.preprocessing import variable_original
-            clf, pre = modelo.pipeline.named_steps["clf"], modelo.pipeline.named_steps["prep"]
+            clf, pre = modelo_local.pipeline.named_steps["clf"], modelo_local.pipeline.named_steps["prep"]
             nombres = [variable_original(n) for n in pre.get_feature_names_out()]
             imp = (pd.Series(np.abs(clf.coef_[0]), index=nombres).groupby(level=0).sum()
                      .rename("media").to_frame().sort_values("media"))
             xerr, xlabel = None, "|coeficiente| agregado por variable · modelo en uso"
-        if True:
+        else:
+            imp = None
+        if imp is not None:
             from src.predict import ETIQUETAS
             fig, ax = plt.subplots(figsize=(6.2, 4.6))
             ax.barh([ETIQUETAS.get(v, v) for v in imp.index], imp.media, xerr=xerr,
@@ -174,6 +279,9 @@ with tab_cohorte:
             ax.grid(axis="x", alpha=.3)
             for s in ("top", "right"): ax.spines[s].set_visible(False)
             fig.tight_layout(); st.pyplot(fig, use_container_width=True); plt.close(fig)
+        else:
+            st.caption("Panel no disponible: requiere acceso local a los artefactos del modelo "
+                       "(la API todavía no expone importancias de variables como endpoint).")
 
     st.divider()
     st.markdown("**Contexto del análisis exploratorio**")
@@ -215,7 +323,7 @@ with tab_individual:
             reg["parity"]               = selector(a, "parity", "Paridad")
             reg["enrol_hiv_status_cat"] = selector(b, "enrol_hiv_status_cat", "Estado VIH")
         with cn:
-            usa_z = bool(modelo.features_extra)
+            usa_z = bool(info.get("features_extra"))
             st.markdown(f"**Condiciones del nacimiento** · {6 + (3 if usa_z else 0)}")
             a, b = st.columns(2)
             reg["b1_sex"]        = selector(a, "b1_sex", "Sexo")
@@ -237,7 +345,11 @@ with tab_individual:
         enviado = st.form_submit_button("Calcular riesgo", type="primary", use_container_width=True)
 
     if enviado:
-        r = modelo.predecir(reg)
+        try:
+            r = api_predecir(horizonte, variante, reg)
+        except ApiError as error:
+            st.error(f"La API no pudo calcular la predicción.\n\n{error}")
+            st.stop()
         band = r["banda"]
         g, e = st.columns([1, 1.6])
         with g:
@@ -253,6 +365,8 @@ with tab_individual:
             st.caption(f"Con capacidad del {int(capacidad*100)} %, este bebé "
                        f"{'**entra**' if r['probabilidad'] >= po['umbral'] else '**no entra**'} "
                        f"en el grupo de seguimiento estrecho (umbral {po['umbral']:.2f}).")
+            st.caption(f"Estimado con la variante **{r['variante']}** del modelo "
+                       f"({info['peldano']}).")
         with e:
             st.markdown("**Qué empuja esta estimación**")
             contrib = pd.DataFrame(r["contribuciones"])
@@ -305,6 +419,7 @@ with tab_prior:
             "ID": tabla["newid"],
             "Prob.": tabla.probabilidad.round(3),
             "Banda": tabla.banda.map(ETIQ_BANDA),
+            "Variante": tabla.variante,
             "Prematuro": tabla.preterm.map(etq).fillna("—"),
             "PEG": tabla.sga.map(etq).fillna("—"),
             "Bajo peso": tabla.lbw.map(etq).fillna("—"),
@@ -315,10 +430,10 @@ with tab_prior:
         st.download_button("Descargar lista priorizada (CSV)",
                            tabla.drop(columns=["seguimiento"]).assign(seguimiento=tabla.seguimiento.map({True: "si", False: "no"}))
                                 .to_csv(index=False).encode("utf-8"),
-                           file_name=f"lista_priorizada_{horizonte}_cap{int(capacidad*100)}.csv", mime="text/csv")
+                           file_name=f"lista_priorizada_{horizonte}_{variante}_cap{int(capacidad*100)}.csv", mime="text/csv")
     with der:
         st.markdown("**Cómo cambia el punto de operación con la capacidad**")
-        curva = pd.DataFrame(modelo.meta["curva_capacidad"])
+        curva = pd.DataFrame(info["curva_capacidad"])
         fig, ax = plt.subplots(figsize=(5.4, 3.8))
         ax.plot(curva.capacidad * 100, curva.sensibilidad * 100, "o-", color=AZUL, lw=2, label="Sensibilidad")
         ax.plot(curva.capacidad * 100, curva.vpp * 100, "s-", color=VERDE, lw=2, label="VPP")
@@ -329,4 +444,5 @@ with tab_prior:
         for s in ("top", "right"): ax.spines[s].set_visible(False)
         fig.tight_layout(); st.pyplot(fig, use_container_width=True); plt.close(fig)
         st.caption("Marcar a más bebés sube la sensibilidad y baja el VPP. La capacidad real del "
-                   "programa, no un umbral estadístico, es lo que fija el punto.")
+                   "programa, no un umbral estadístico, es lo que fija el punto. Curva servida por "
+                   "`GET /model/info`.")
