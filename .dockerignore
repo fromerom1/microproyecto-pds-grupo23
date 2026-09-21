@@ -1,0 +1,54 @@
+# Contexto de construccion de las imagenes (deploy/Dockerfile.api y
+# deploy/Dockerfile.tablero). Todo lo que no necesita ninguna de las dos
+# imagenes se queda fuera: el contexto se envia completo al demonio de Docker
+# antes de ejecutar el primer COPY, asi que recortarlo acelera cada build.
+#
+# OJO al editar: api/README.md lo lee api/tests/test_readme.py, y README.md lo
+# necesita pyproject.toml para construir el wheel. Ninguno de los dos puede
+# excluirse.
+
+# Historia y herramientas de versionamiento
+.git/
+.github/
+.gitattributes
+.dvc/
+.dvcignore
+*.dvc
+
+# Entornos y cache locales
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Tracking local de experimentos (puede pesar cientos de MB)
+mlruns/
+mlartifacts/
+mlflow.db
+mlflow.log
+run_summary.png
+
+# Datos: la cohorte entra por volumen, no por la imagen
+data/
+
+# Artefactos del build local del wheel: las imagenes lo construyen adentro
+dist/
+build/
+*.egg-info/
+
+# Material que no participa del servicio
+notebooks/
+Mockup/
+docs/
+figures/02_model/
+figures/03_mlflow/
+figures/04_escalera/
+figures/04_robustez/
+figures/05_calidad/
+CHANGELOG.md
+.nojekyll

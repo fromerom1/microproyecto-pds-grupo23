@@ -1,0 +1,22 @@
+# Dependencias de la imagen de la API (deploy/Dockerfile.api).
+#
+# Las cuatro primeras participan en el pickle del modelo y van fijadas: un
+# .joblib guardado con una version de scikit-learn no tiene garantia de cargar
+# con otra. Son las mismas de requirements.txt y del wheel modelo-stunting.
+#
+# No incluye shap: la variante servida (B, regresion logistica) calcula las
+# contribuciones con coeficientes. Si algun dia se sirve una variante de
+# arboles, agregar `shap>=0.45` aqui o instalar el wheel con el extra
+# `modelo-stunting[arboles]`.
+numpy==2.4.4
+pandas==2.3.3
+scikit-learn==1.8.0
+joblib==1.5.3
+
+# Servicio
+fastapi>=0.115,<1.0
+uvicorn>=0.30,<1.0
+
+# Pruebas dentro del contenedor (api/README.md documenta como correrlas)
+pytest>=8.0,<10.0
+httpx>=0.28,<1.0

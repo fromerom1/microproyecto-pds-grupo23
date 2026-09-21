@@ -135,7 +135,12 @@ def api_punto_operacion(horizonte: str, variante: str, capacidad: float,
 
 def _registros_seguros(df: pd.DataFrame) -> list[dict]:
     """dict JSON-serializable por fila: NaN -> None, escalares numpy -> nativos de Python."""
-    limpio = df.where(pd.notna(df), None)
+    # astype(object) ANTES del where: en una columna float, `where(..., None)` no
+    # guarda None —float no puede— y deja el NaN, con lo que json.dumps revienta
+    # con "Out of range float values are not JSON compliant". Pasa con la cohorte
+    # real, donde 48 de 333 filas tienen algun faltante. Es el mismo patron que
+    # api/api.py usa al serializar la respuesta del lote.
+    limpio = df.astype(object).where(df.notna(), None)
     registros = []
     for fila in limpio.to_dict(orient="records"):
         registros.append({k: (v.item() if isinstance(v, np.generic) else v) for k, v in fila.items()})

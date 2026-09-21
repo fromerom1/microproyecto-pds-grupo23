@@ -1,0 +1,27 @@
+# Dependencias de la imagen del tablero (deploy/Dockerfile.tablero).
+#
+# El tablero consume la API por HTTP para todo lo que es prediccion. Conserva
+# scikit-learn y joblib por una sola razon: el panel "Variables que mas pesan
+# en el modelo" necesita los coeficientes del pipeline, y la API todavia no los
+# expone como endpoint. Cuando exista `GET /model/importances`, scikit-learn,
+# joblib y el COPY de models/ pueden salir de esta imagen.
+#
+# Las cuatro primeras van fijadas porque participan en el pickle del modelo:
+# son las mismas de requirements.txt y del wheel modelo-stunting.
+numpy==2.4.4
+pandas==2.3.3
+scikit-learn==1.8.0
+joblib==1.5.3
+
+# Interfaz y figuras.
+#
+# Streamlit va fijado a proposito: app/dashboard.py usa `use_container_width`,
+# que en 1.64 ya emite aviso de deprecacion. Un `>=1.40` abierto haria que el
+# build de la semana entrante trajera una version que lo haya retirado y el
+# tablero se cayera en el arranque, sin que nadie hubiera tocado el codigo.
+# Verificado de punta a punta contra la API el 2026-09-21.
+streamlit==1.64.0
+matplotlib>=3.8,<4
+
+# Cliente de la API
+httpx>=0.28,<1.0
