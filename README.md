@@ -2,7 +2,7 @@
 
 **A partir del perfil materno al enrolamiento y los datos del nacimiento**
 
-Micro-proyecto · **Entrega 3** · Septiembre de 2026  
+Micro-proyecto · Septiembre de 2026  
 Proyecto: Desarrollo de Soluciones — Maestría en Inteligencia Artificial, Universidad de los Andes  
 **Grupo 23**, en colaboración con la **Fundación Canguro**
 
