@@ -1,0 +1,74 @@
+# Imagen del tablero Streamlit - Micro-proyecto PDS, Grupo 23.
+#
+# El tablero no importa el modelo para predecir: llama a la API por HTTP
+# (DASHBOARD_API_URL). Instala el mismo wheel que la API por dos razones: para
+# el contrato de modelado que importa (`src.preprocessing`) y para el panel de
+# importancia de variables, que necesita los coeficientes del pipeline porque
+# la API todavia no los expone como endpoint.
+#
+# Construir desde la raiz del repositorio:
+#   docker build -f deploy/Dockerfile.tablero -t microproyecto-g23/tablero:0.1.0 .
+
+# ---------------------------------------------------------------- etapa 1: wheel
+FROM python:3.12-slim AS wheel
+
+WORKDIR /build
+RUN pip install --no-cache-dir build==1.2.2.post1
+COPY pyproject.toml README.md ./
+COPY src/ ./src/
+RUN python -m build --wheel --outdir /dist
+
+# ---------------------------------------------------------------- etapa 2: tablero
+FROM python:3.12-slim AS tablero
+
+RUN adduser --disabled-password --gecos "" tablero
+
+WORKDIR /app
+
+COPY deploy/requirements-tablero.txt /tmp/requirements-tablero.txt
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r /tmp/requirements-tablero.txt \
+ && rm /tmp/requirements-tablero.txt
+
+# El modelo empaquetado, instalado en el directorio de trabajo por la misma
+# razon que en la imagen de la API: asi `src` resuelve /app/models y /app/data.
+COPY --from=wheel /dist/*.whl /tmp/
+RUN pip install --no-cache-dir --no-deps --target /app /tmp/*.whl \
+ && rm /tmp/*.whl
+
+# Codigo del tablero y artefactos que lee en local
+COPY app/ /app/app/
+COPY models/ /app/models/
+COPY .streamlit/ /app/.streamlit/
+
+# Las unicas figuras que el tablero muestra: contexto del EDA e importancias
+# agregadas de la variante cv.
+COPY figures/01_EDA/fig3_prevalencia_por_visita.png \
+     figures/01_EDA/fig5_laz_trayectoria.png \
+     /app/figures/01_EDA/
+COPY figures/03_cv/importancias_lr_C0.1_12m.csv \
+     figures/03_cv/importancias_lr_C0.1_24m.csv \
+     /app/figures/03_cv/
+
+RUN python -c "import src.preprocessing, src.predict; print('contrato de modelado en', src.preprocessing.__file__)"
+
+# La cohorte llega por volumen de solo lectura, igual que en la API: el tablero
+# la lee para las cifras de la vista Cohorte y para armar el lote que manda a
+# POST /predict/batch.
+RUN mkdir -p /app/data/processed /tmp/mpl \
+ && chown -R tablero:tablero /app /tmp/mpl
+
+ENV DASHBOARD_API_URL=http://api:8000 \
+    MPLCONFIGDIR=/tmp/mpl \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+USER tablero
+
+EXPOSE 8501
+
+# --server.address=0.0.0.0 es obligatorio: en 127.0.0.1 Streamlit solo seria
+# alcanzable desde dentro del propio contenedor y el -p nunca le entregaria
+# trafico.
+CMD ["python", "-m", "streamlit", "run", "app/dashboard.py", \
+     "--server.address=0.0.0.0", "--server.port=8501"]

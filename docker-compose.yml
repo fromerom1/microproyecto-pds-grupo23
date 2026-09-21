@@ -1,0 +1,55 @@
+# Stack de la Entrega 3 - Micro-proyecto PDS, Grupo 23.
+#
+#   api      FastAPI sobre el modelo empaquetado          -> http://<host>:8000/docs
+#   tablero  Streamlit que consume esa API por HTTP       -> http://<host>:8501
+#
+# Antes del primer arranque hay que traer la cohorte de referencia, que no
+# viaja en las imagenes (esta versionada en S3 con DVC):
+#
+#   dvc pull                       # o, si no hay credenciales: dvc repro features
+#   docker compose up -d --build
+#
+# El manual completo, incluido el despliegue en EC2, esta en
+# docs/MANUAL_INSTALACION.md.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.api
+    image: microproyecto-g23/api:0.1.0
+    container_name: g23-api
+    ports:
+      - "8000:8000"
+    volumes:
+      # Solo lectura: el contenedor nunca escribe datos de la cohorte.
+      - ./data/processed:/app/data/processed:ro
+    healthcheck:
+      # GET /health devuelve 503 si falta la cohorte o si algun modelo no carga,
+      # asi que este chequeo distingue "el proceso arranco" de "el servicio
+      # sirve". El tablero espera a que pase.
+      test: ["CMD", "python", "-c", "import urllib.request as u, sys; sys.exit(0 if u.urlopen('http://127.0.0.1:8000/health', timeout=5).status == 200 else 1)"]
+      interval: 15s
+      timeout: 10s
+      retries: 6
+      start_period: 30s
+    restart: unless-stopped
+
+  tablero:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.tablero
+    image: microproyecto-g23/tablero:0.1.0
+    container_name: g23-tablero
+    ports:
+      - "8501:8501"
+    environment:
+      # `api` es el nombre del servicio: Docker lo resuelve en la red interna
+      # del compose. El tablero no necesita conocer la IP de la maquina.
+      DASHBOARD_API_URL: http://api:8000
+    volumes:
+      - ./data/processed:/app/data/processed:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped

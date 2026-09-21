@@ -1,0 +1,75 @@
+# Imagen de la API de riesgo nutricional - Micro-proyecto PDS, Grupo 23.
+#
+# Dos etapas. La primera construye el wheel del modelo desde el propio
+# repositorio; la segunda lo instala junto al codigo del servicio. La imagen
+# NO copia src/ del repositorio: instala la distribucion `modelo-stunting`,
+# de modo que lo que se despliega es un modelo empaquetado y no una copia
+# suelta de los fuentes.
+#
+# Construir desde la raiz del repositorio:
+#   docker build -f deploy/Dockerfile.api -t microproyecto-g23/api:0.1.0 .
+
+# ---------------------------------------------------------------- etapa 1: wheel
+FROM python:3.12-slim AS wheel
+
+WORKDIR /build
+RUN pip install --no-cache-dir build==1.2.2.post1
+
+# Solo lo que el paquete necesita para construirse
+COPY pyproject.toml README.md ./
+COPY src/ ./src/
+
+RUN python -m build --wheel --outdir /dist
+# Deja un unico wheel en /dist: modelo_stunting-0.1.0-py3-none-any.whl
+
+# ---------------------------------------------------------------- etapa 2: servicio
+FROM python:3.12-slim AS servicio
+
+# El servicio no corre como root
+RUN adduser --disabled-password --gecos "" apiuser
+
+WORKDIR /app
+
+# Dependencias primero: cambian mucho menos que el codigo, y asi la capa de pip
+# se reutiliza entre builds.
+COPY deploy/requirements-api.txt /tmp/requirements-api.txt
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r /tmp/requirements-api.txt \
+ && rm /tmp/requirements-api.txt
+
+# El modelo empaquetado, construido en la etapa anterior. Se instala EN el
+# directorio de trabajo (--target /app), no en site-packages: `src/predict.py`
+# resuelve sus rutas por defecto relativas al paquete, asi que dejarlo en /app
+# es lo que hace que encuentre /app/models y /app/data sin parchear nada.
+# --no-deps porque las dependencias ya estan instaladas y fijadas arriba.
+COPY --from=wheel /dist/*.whl /tmp/
+RUN pip install --no-cache-dir --no-deps --target /app /tmp/*.whl \
+ && rm /tmp/*.whl
+
+# Codigo del servicio y artefactos entrenados
+COPY api/ /app/api/
+COPY models/ /app/models/
+
+# Falla el build si el paquete no quedo importable o si no se descubren modelos
+RUN python -c "import src.predict; print('modelo empaquetado en', src.predict.__file__)" \
+ && python -c "from api.modelos import modelos_disponibles; v = modelos_disponibles(); assert v, 'no se descubrieron modelos en /app/models'; print('variantes disponibles:', v)"
+
+# La cohorte de referencia NO viaja en la imagen: se monta como volumen de solo
+# lectura (docker-compose.yml). Son datos, no codigo, y estan versionados en S3
+# con DVC. El directorio queda creado para que el punto de montaje exista.
+RUN mkdir -p /app/data/processed && chown -R apiuser:apiuser /app
+
+ENV API_HOST=0.0.0.0 \
+    API_PORT=8000 \
+    API_MODELS_DIR=/app/models \
+    API_COHORTE_PATH=/app/data/processed/model_dataset_escalera.csv \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+USER apiuser
+
+# Documenta el puerto; no lo publica. Eso lo hace `ports:` en el compose.
+EXPOSE 8000
+
+# api/__main__.py lee API_HOST y API_PORT y levanta uvicorn sobre api.main:app
+CMD ["python", "-m", "api"]

@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "modelo-stunting"
+version = "0.1.0"
+description = "Modelo de riesgo de desnutricion cronica infantil: contrato de preprocesamiento y prediccion (Micro-proyecto PDS, Grupo 23)"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Grupo 23 - MAIA Uniandes 2026-2" }]
+keywords = ["stunting", "desnutricion", "prediccion", "fundacion-canguro"]
+
+# Fijadas a proposito: el .joblib es un pickle de scikit-learn y no hay garantia
+# de que una version distinta lo abra. Son las mismas versiones de
+# requirements.txt, verificadas con la evaluacion CV y el tablero.
+dependencies = [
+    "numpy==2.4.4",
+    "pandas==2.3.3",
+    "scikit-learn==1.8.0",
+    "joblib==1.5.3",
+]
+
+[project.optional-dependencies]
+# Solo si la variante servida es de arboles: las contribuciones se calculan con
+# SHAP. La variante en produccion (B, logistica) usa coeficientes y no lo necesita.
+arboles = ["shap>=0.45"]
+# Para reentrenar y evaluar, no para servir.
+entrenamiento = [
+    "matplotlib>=3.8",
+    "seaborn>=0.13",
+    "mlflow==2.22.5",
+    "shap>=0.45",
+]
+
+[project.urls]
+Repositorio = "https://github.com/fromerom1/microproyecto-pds-grupo23"
+
+[tool.setuptools]
+# El paquete importable se llama `src` porque es el nombre con el que lo
+# importan el tablero, la API y los propios artefactos serializados
+# (`src.preprocessing.Winsorizer` viaja dentro del pickle). Renombrarlo
+# obligaria a reentrenar todos los modelos.
+packages = ["src"]
