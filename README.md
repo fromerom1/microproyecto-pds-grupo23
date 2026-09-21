@@ -1,7 +1,25 @@
 # Predicción temprana de desnutrición crónica infantil
 
-Micro-proyecto — Proyecto Desarrollo de Soluciones, MAIA Uniandes 2026-2, Grupo 23.
-En colaboración con la **Fundación Canguro**.
+**A partir del perfil materno al enrolamiento y los datos del nacimiento**
+
+Micro-proyecto · **Entrega 3** · Septiembre de 2026  
+Proyecto: Desarrollo de Soluciones — Maestría en Inteligencia Artificial, Universidad de los Andes  
+**Grupo 23**, en colaboración con la **Fundación Canguro**
+
+## Equipo
+
+| Integrante | GitHub |
+|---|---|
+| César Andrés Romero Cruzate | [@Caromeroc12](https://github.com/Caromeroc12) |
+| Alejandro Mesa Bustamante | [@mesabusta](https://github.com/mesabusta) |
+| Juan Felipe Rodríguez Granados | [@felipe97rg](https://github.com/felipe97rg) |
+| Yeisson Steven Useche Ocampo | [@ysusecheo93](https://github.com/ysusecheo93) |
+| Fabio Romero Manrique | [@fromerom1](https://github.com/fromerom1) |
+
+El aporte de cada integrante queda registrado en los commits y los *pull requests* del
+repositorio.
+
+## El prototipo
 
 | Entrega | Qué es | Dónde |
 |---|---|---|
@@ -397,6 +415,6 @@ Hoy no representa un problema porque los datos son de una cohorte pública. Cuan
 incorporen datos del Observatorio Canguro —historias clínicas anonimizadas bajo
 acuerdo de confidencialidad— esto debe revisarse antes de recibirlos.
 
-## Equipo
+---
 
-Grupo 23 · Maestría en Inteligencia Artificial, Universidad de los Andes.
+Grupo 23 · Maestría en Inteligencia Artificial, Universidad de los Andes · 2026-2
